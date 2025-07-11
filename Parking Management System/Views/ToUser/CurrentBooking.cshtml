@@ -1,0 +1,62 @@
+
+﻿@{
+	Layout = "~/Views/Shared/UserLayout.cshtml";
+}
+<style>
+	.booking-card {
+		border: 2px solid green;
+		border-radius: 12px;
+		padding: 20px;
+		max-width: 450px;
+		margin: 30px auto;
+		background-color: #f8f9fa;
+		box-shadow: 0 0 12px rgba(0, 128, 0, 0.1);
+	}
+
+		.booking-card h5 {
+			color: green;
+		}
+
+</style>
+<main>
+
+	<div class="container-fluid">
+		<div class="row">
+		
+			<main class="col-md-10 ms-sm-auto px-md-4 tab-content pt-3">
+
+					<h3>Current Booking Status</h3>
+				
+
+				
+
+				<div id="activeBookingsContainer" class="row">
+					
+					</div>
+			</main>
+		</div>
+	</div>
+</main>
+
+@section Scripts{
+	<script src="/js/bookings.js"></script>
+}
+
+
+@* <div class="tab-pane fade show active">
+
+					<div class="card p-3" style="background-color:white; border-radius:7px;">
+						<p><strong>Location:</strong> Downtown Parking Lot</p>
+						<p><strong>Slot:</strong> 12</p>
+						<p><strong>Start Time:</strong> 09:00 AM</p>
+						<p>
+							<strong>Timer:</strong>
+							<span class="text-success fw-bold">01:15:32</span>
+						</p>
+						<p><strong>Estimated Bill:</strong> 575 PKR</p>
+
+						 <button class="btn btn-danger me-2">End Parking</button>
+						 <button class="btn btn-secondary">Extend</button> 
+					</div>
+				</div> *@
+

@@ -1,0 +1,93 @@
+﻿@* @model IEnumerable<RoleDTO> *@
+
+{
+	@* ViewData["Title"] = "Index"; *@
+}
+
+<h3 class="mt-2">Role Details List</h3>
+
+<p>
+	<a class="btn btn-outline-success" asp-action="Create">Create New</a>
+</p>
+
+<ul class="nav nav-tabs m-2 float-end">
+	<li class="nav-item">
+		<a class="nav-link @(ViewBag.IsActive == true ? "active" : "")"
+		   asp-action="ActiveRole">Active Roles</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link @(ViewBag.IsActive == false ? "active" : "")"
+		   asp-action="InActiveRole">InActive Roles</a>
+	</li>
+</ul>
+
+
+
+
+
+<table class="table" id="DataTableId">
+	<thead>
+		<tr class="text-center">
+			<th>
+				RoleId
+			</th>
+			<th>
+				Roles
+			</th>
+			 <th>
+				Active
+			</th> 
+			<th>
+				CreatedTime
+			</th>
+			
+		</tr>
+	</thead>
+	<tbody>
+		@* @foreach (var item in Model)
+		{
+			<tr class="text-center">
+				<td>
+					@Html.DisplayFor(modelItem => item.RoleId)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Roles)
+				</td>
+				@* <td>
+					@Html.DisplayFor(modelItem => item.Active)
+				</td> 
+				<td>
+					@Html.DisplayFor(modelItem => item.CreatedTime)
+				</td
+				 <td>
+                @Html.ActionLink("Edit", "Edit", new {id = item.RoleId /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.RoleId/* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.RoleId/* id=item.PrimaryKey */ })
+            </td> 
+
+				
+
+			</tr>
+		}> *@
+	</tbody>
+</table>
+
+@* <td>
+	@Html.ActionLink("Edit", "Edit", new { id = item.RoleId }, new { @class = "btn btn-outline-warning" }) |
+	@Html.ActionLink("Details", "Details", new { id = item.RoleId }, new { @class = "btn btn-outline-info" }) |
+	@Html.ActionLink("Delete", "Delete", new { id = item.RoleId }, new { @class = "btn btn-outline-danger" }) |
+	<form asp-action="RoleStatus" method="post" style="display:inline">
+		@Html.AntiForgeryToken()
+		<input type="hidden" name="id" value="@item.RoleId" />
+		<button type="submit" class="btn btn-outline-warning">Toggle Status</button>
+	</form>
+</td> *@
+
+@section scripts{
+	@* <script>
+		$(document).ready(function () {
+			alert("DataTable_file.js is loaded successfully!");
+		});
+	</script> *@
+	<script src="~/datatable/datatable_file.js"></script>
+}

@@ -1,0 +1,38 @@
+
+﻿@{
+	Layout = "~/Views/Shared/UserLayout.cshtml";
+}
+<main>
+	<div class="container-fluid">
+		<div class="row">
+			
+
+			<main class="col-md-10 ms-sm-auto px-md-4 tab-content pt-3">
+				<div class="tab-pane fade show active" id="available-parking" role="tabpanel" aria-labelledby="available-parking-tab">
+					<h2>Available Parking Slots</h2>
+					<form class="row g-3 mb-3">
+						<div class="col-md-6">
+							<input type="text" class="form-control" placeholder="Enter city or zone" />
+						</div>
+						<div class="col-md-3">
+							<button type="submit" class="btn btn-primary w-100">Search</button>
+						</div>
+					</form>
+					 <ul class="list-group">
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							Downtown Parking Lot
+							<span class="badge bg-success rounded-pill">5 slots</span>
+							@* <button class="btn btn-sm btn-outline-primary ms-3">View</button> *@
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							City Mall Garage
+							<span class="badge bg-success rounded-pill">2 slots</span>
+							@* <button class="btn btn-sm btn-outline-primary ms-3">View</button> *@
+						</li>
+					</ul> 
+				</div>
+
+			</main>
+		</div>
+	</div>
+</main>

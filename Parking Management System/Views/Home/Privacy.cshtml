@@ -1,0 +1,81 @@
+﻿@{
+    ViewData["Title"] = "Privacy Policy";
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>Use this page to detail your site's privacy policy.</p>
+
+
+<form class="row g-3">
+	<!-- Location Dropdown -->
+	<div class="col-md-4">
+		<label class="form-label">Select Location</label>
+		<select id="LocationDropdown" class="form-select">
+			<option selected disabled>Select Location</option>
+		</select>
+	</div>
+
+	<!-- Slot Type -->
+	<div class="col-md-4">
+		<label class="form-label">Slot Type</label>
+		<select id="SlotTypeDropdown" class="form-select" disabled>
+			<option selected disabled>Select Slot Type</option>
+			<option value="Car">Car</option>
+			<option value="Bike">Bike</option>
+			<option value="Bus">Bus</option>
+		</select>
+	</div>
+
+	<!-- Available Slots -->
+	<div class="col-md-4">
+		<label class="form-label">Available Slots</label>
+		<select id="AvailableSlotDropdown" class="form-select" disabled>
+			<option selected disabled>Select Slot</option>
+		</select>
+	</div>
+</form>
+
+@section Scripts {
+	<script>
+		$(document).ready(function () {
+
+			// Load locations on page load
+			$.get('/ToUser/GetLocations', function (data) {
+				$.each(data, function (i, item) {
+					$('#LocationDropdown').append(
+						$('<option>', {
+							value: item.locationId,
+							text: item.locationName
+						})
+					);
+				});
+			});
+
+			// On Location change, enable SlotType
+			$('#LocationDropdown').on('change', function () {
+				$('#SlotTypeDropdown').prop('disabled', false);
+				$('#AvailableSlotDropdown').empty().append('<option selected disabled>Select Slot</option>').prop('disabled', true);
+			});
+
+			// On SlotType change, fetch Free Slots
+			$('#SlotTypeDropdown').on('change', function () {
+				let locationId = $('#LocationDropdown').val();
+				let slotType = $('#SlotTypeDropdown').val();
+
+				$.get('/ToUser/GetAvailableSlots', { locationId: locationId, slotType: slotType }, function (data) {
+					$('#AvailableSlotDropdown').empty().append('<option selected disabled>Select Slot</option>');
+					$.each(data, function (i, item) {
+						$('#AvailableSlotDropdown').append(
+							$('<option>', {
+								value: item.slotId,
+								text: item.slotNumber
+							})
+						);
+					});
+					$('#AvailableSlotDropdown').prop('disabled', false);
+				});
+			});
+		});
+	</script>
+}
+

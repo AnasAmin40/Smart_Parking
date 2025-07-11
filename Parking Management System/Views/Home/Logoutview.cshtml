@@ -1,0 +1,18 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logged Out</title>
+    <script>
+        // Clear sessionStorage and redirect to home page
+        sessionStorage.clear();
+        window.location.href = '/Home/Index';
+    </script>
+</head>
+<body>
+    <p>Logging out...</p>
+</body>
+</html>

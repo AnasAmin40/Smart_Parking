@@ -1,0 +1,219 @@
+
+﻿@{
+	Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+
+
+<main>
+	<div class="container-fluid">
+		<div class="row">
+			<main class="col-md-10 ms-sm-auto px-md-4">
+				
+				<div style="background-color:none; min-height: 450px; border-color:#fff" class="card shadow-sm rounded mb-4 bg-light mt-3">
+					<div class="card-header d-flex justify-content-between align-items-center">
+						<h2 class="mb-0 fw-bold text-primary">Manage Bookings</h2>
+
+						@* <button class="btn btn-success btn-sm d-flex align-items-center" id="AddBtn">
+							<i class="bi bi-plus-lg me-1"></i> Add Booking
+						</button> *@
+					</div>
+					<div class="card-body">
+
+						<table id="Tableid" class="table table-striped table-hover align-middle">
+							<thead>
+								<tr>
+									<th>Id</th>
+									<th>User</th>
+									<th>Location</th>
+									<th>Slot</th>
+									<th>StartTime</th>
+									<th>ExitTime</th>
+									<th>Hours</th>
+									<th>Cost</th>
+									<th>IsPaid</th>
+									<th>Status</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody id="TableBody"></tbody>
+						</table>
+
+					</div>
+				</div>
+
+
+				<div class="modal fade model" id="Modalid">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h3 class="text-info modal-title" id="ModalHeading">Add User</h3>
+								<button onclick="Close();" class="btn-close text-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+							</div>
+
+							<div class="modal-body">
+								<form method="post">
+									<div class="form-group " id="UserIdDiv">
+										@* <label>UserId</label> *@
+										<input type="text" class="form-control" id="SlotId" disabled="disabled" hidden />
+										<input type="hidden" id="SlotIdHidden" value="123" />
+
+									</div>
+									<div class="form-group">
+										<label>Slot Number</label>
+										<input placeholder="Enter SlotNumber" type="text" class="form-control" id="slotNumbers" autocomplete="off" />
+									</div>
+									<div class="form-group form-check mt-2">
+										<label typeof="checkbox" class="form-check-label">Status</label>
+										<input type="checkbox" class="form-check-input" id="status" />
+									</div>
+
+
+									<div class="form-group">
+										<label>SlotType</label>
+										<input placeholder="Enter SlotType" type="text" class="form-control" id="slotType" autocomplete="off" />
+									</div>
+									<div class="form-group">
+										<label>PricePerHour</label>
+										<input placeholder="Enter PricePerHour" type="number" class="form-control" id="PPH" autocomplete="off" />
+									</div>
+									<div class="form-group" id="passwordinput">
+										<label>ParkingLocation</label>
+										<select id="parkingLocation" class="form-control"></select>
+									</div>
+
+
+
+								</form>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-success" onclick="AddSlot();" id="SaveBTn">Save</button>
+								<button class="btn btn-warning" onclick="Update();" style="display:none" id="UpdateBtn">Update</button>
+								<button class="btn btn-danger btn-default" data-bs-dismiss="modal" onclick="CloseModal();">Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+			</main>
+		</div>
+	</div>
+</main>
+
+@section scripts {
+	<script src="/js/bookings.js"></script>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* <main>
+      <div class="container-fluid">
+        <div class="row">
+
+
+
+          <main class="col-md-10 ms-sm-auto px-md-4">
+            <h2 class="mt-4">Manage Bookings</h2>
+
+                <section>
+                    <form class="row g-3 mb-4" id="bookingSearchForm">
+                        <div class="col-md-3">
+                            <input type="text"
+                                   class="form-control"
+                                   id="searchUser"
+                                   placeholder="Search by User" />
+                        </div>
+                        <div class="col-md-3">
+                            <select id="filterLocation" class="form-select">
+                                <option value="">All Locations</option>
+                                <option value="1">Downtown Garage</option>
+                                <option value="2">Airport Lot</option>
+                                <option value="3">City Center Parking</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <input type="date" class="form-control" id="filterDate" />
+                        </div>
+                        <div class="col-md-3 d-flex">
+                            <button type="submit" class="btn btn-primary me-2">
+                                Search
+                            </button>
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    id="resetFilters">
+                                Reset
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>User</th>
+                                    <th>Location</th>
+                                    <th>Slot Number</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bookingsTableBody">
+                                <tr>
+                                    <td>01</td>
+                                    <td>Anas</td>
+                                    <td>Downtown Garage</td>
+                                    <td>A1</td>
+                                    <td>2025-06-20 09:00</td>
+                                    <td>2025-06-20 12:00</td>
+                                    <td>Confirmed</td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm me-2">Edit</button>
+                                        <button class="btn btn-danger btn-sm">Cancel</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>02</td>
+                                    <td>Saad</td>
+                                    <td>Airport Lot</td>
+                                    <td>B2</td>
+                                    <td>2025-06-21 14:00</td>
+                                    <td>2025-06-21 18:00</td>
+                                    <td>Pending</td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm me-2">Edit</button>
+                                        <button class="btn btn-danger btn-sm">Cancel</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+      </div>
+
+    </main> *@
+

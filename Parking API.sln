@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parking API", "Parking API\Parking API.csproj", "{3315B4CC-1FA1-481D-AFC1-9B727916F0E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parking Management System", "Parking Management System\Parking Management System.csproj", "{9437745C-BE3C-4C27-A1FD-0F5B104E1F88}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3315B4CC-1FA1-481D-AFC1-9B727916F0E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3315B4CC-1FA1-481D-AFC1-9B727916F0E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3315B4CC-1FA1-481D-AFC1-9B727916F0E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3315B4CC-1FA1-481D-AFC1-9B727916F0E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9437745C-BE3C-4C27-A1FD-0F5B104E1F88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9437745C-BE3C-4C27-A1FD-0F5B104E1F88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9437745C-BE3C-4C27-A1FD-0F5B104E1F88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9437745C-BE3C-4C27-A1FD-0F5B104E1F88}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ABC56BA8-ECDB-4197-BE5B-3733AC4BB6E3}
+	EndGlobalSection
+EndGlobal

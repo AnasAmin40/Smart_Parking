@@ -1,0 +1,47 @@
+﻿@model Parking_Management_System.Models.RoleDTO
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>RoleDTO</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateRole" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            
+            <div class="form-group">
+                <label asp-for="Roles" class="control-label"></label>
+                <input asp-for="Roles" id="tex_Role" class="form-control" />
+                @* <span asp-validation-for="Roles" class="text-danger"></span> *@
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input"id="tex_Active" asp-for="Active" /> 
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreatedTime" class="control-label"></label>
+                <input asp-for="CreatedTime" class="form-control" />
+                @* <span asp-validation-for="CreatedTime" class="text-danger"></span> *@
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@* @section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} *@
+@section Scripts{
+	<script src="~/js/usermangement.js"></script>
+}
+

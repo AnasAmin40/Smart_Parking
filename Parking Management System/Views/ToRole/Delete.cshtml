@@ -1,0 +1,50 @@
+﻿@model Parking_Management_System.Models.RoleDTO
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete Role</h1>
+
+<div>
+    @* <h4>RoleDTO</h4> *@
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.RoleId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.RoleId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Roles)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Roles)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Active)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Active)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CreatedTime)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CreatedTime)
+        </dd>
+    </dl>
+</div>
+
+
+ <div>
+    <form asp-action="DeleteRole" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.RoleId" />
+
+        <input type="hidden" asp-for="RoleId" />
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </form>
+</div> 

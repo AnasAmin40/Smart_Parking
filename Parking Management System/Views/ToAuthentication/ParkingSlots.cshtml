@@ -1,0 +1,203 @@
+
+﻿@{
+	Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-10 ms-sm-auto px-md-4">
+				<div class="form-group mt-3 mb-3 col-md-4 ">
+					<label>Filter by Location</label>
+					<select id="locationFilter" class="form-select">
+						<option value="">-- Select Location --</option>
+					</select>
+				</div>
+
+				@*<h2 class="mt-4">Manage Users</h2> *@
+				<div style="background-color:none;  border-color:#fff" class="card shadow-sm rounded mb-4 bg-light mt-3">
+					<div class="card-header d-flex justify-content-between align-items-center">
+						<h2 class="mb-0 fw-bold text-primary">Manage Slots</h2>
+						
+						<button class="btn btn-success btn-sm d-flex align-items-center" id="AddBtn">
+							<i class="bi bi-plus-lg me-1"></i> Add Slot
+						</button>
+					</div>
+					<div class="card-body">
+
+						<table id="Tableid" class="table table-striped table-hover align-middle">
+							<thead>
+								<tr>
+									<th>Slot ID</th>
+									<th>SlotNumber</th>
+									<th>Status</th>
+									<th>SlotType</th>
+									<th>PricePerHour</th>
+									<th>ParkingLocation</th>
+									<th>Actions</th>
+								</tr>
+							</thead>
+							<tbody id="TableBody"></tbody>
+						</table>
+
+					</div>
+				</div>
+
+
+				<div class="modal fade model" id="Modalid">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h3 class="text-info modal-title" id="ModalHeading">Add User</h3>
+								<button onclick="Close();" class="btn-close text-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+							</div>
+
+							<div class="modal-body">
+								<form method="post">
+									<div class="form-group " id="UserIdDiv">
+										@* <label>UserId</label> *@
+										<input type="text" class="form-control" id="SlotId" disabled="disabled" hidden />
+										<input type="hidden" id="SlotIdHidden" value="123" />
+
+									</div>
+									<div class="form-group">
+										<label>Slot Number</label>
+										<input placeholder="Enter SlotNumber" type="text" class="form-control" id="slotNumbers" autocomplete="off" />
+									</div>
+									<div class="form-group form-check mt-2">
+										<label typeof="checkbox" class="form-check-label">Status</label>
+										<input type="checkbox" class="form-check-input" id="status" />
+									</div>
+									
+
+									<div class="form-group">
+										<label>SlotType</label>
+										<input placeholder="Enter SlotType" type="text" class="form-control" id="slotType" autocomplete="off" />
+									</div>
+									<div class="form-group">
+										<label>PricePerHour</label>
+										<input placeholder="Enter PricePerHour" type="number" class="form-control" id="PPH" autocomplete="off" />
+									</div>
+									<div class="form-group" id="passwordinput">
+										<label>ParkingLocation</label>
+										<select id="parkingLocation" class="form-control"></select>
+									</div>
+									
+
+
+								</form>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-success" onclick="AddSlot();" id="SaveBTn">Save</button>
+								<button class="btn btn-warning" onclick="Update();" style="display:none" id="UpdateBtn">Update</button>
+								<button class="btn btn-danger btn-default" data-bs-dismiss="modal" onclick="CloseModal();">Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+
+
+@section scripts {
+	@* <script src="/js/test.js"></script> *@
+	<script src="/js/slotmanage.js"></script>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* <main>
+	<div class="container-fluid">
+		<div class="row">
+
+
+			<main class="col-md-10 ms-sm-auto px-md-4">
+				<h2 class="mt-4">Manage Parking Slots</h2>
+
+
+
+				<section>
+					<div class="mb-4">
+						<label for="locationSelect" class="form-label">Select Parking Location:</label>
+						<select id="locationSelect" class="form-select" aria-label="Select Parking Location">
+							<option selected disabled>Choose a location</option>
+							<!-- Example options -->
+							<option value="1">Downtown Garage</option>
+							<option value="2">Airport Lot</option>
+							<option value="3">City Center Parking</option>
+						</select>
+					</div>
+
+					<button class="btn btn-success mt-3" data-bs-toggle="modal" data-bs-target="#addSlotModal">
+						Add New Slot
+					</button>
+
+					<div class="table-responsive mt-3">
+						<table class="table table-striped table-hover align-middle">
+							<thead>
+								<tr>
+									<th>Slot Number</th>
+									<th>Type</th>
+									<th>Status</th>
+									<th>Price </th>
+									<th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								<!-- Example static rows -->
+								<tr>
+									<td>A1</td>
+									<td>Car</td>
+									<td>Available</td>
+									<td>500 PRK/1hour</td>
+									<td>
+										<button class="btn btn-primary btn-sm me-2">Edit</button>
+										<button class="btn btn-danger btn-sm">Delete</button>
+									</td>
+								</tr>
+								<tr>
+									<td>A2</td>
+									<td>Bike</td>
+									<td>Occupied</td>
+									<td>250 PRK/1hour</td>
+									<td>
+										<button class="btn btn-primary btn-sm me-2">Edit</button>
+										<button class="btn btn-danger btn-sm">Delete</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</section>
+			</main>
+		</div>
+	</div>
+
+</main> *@
+

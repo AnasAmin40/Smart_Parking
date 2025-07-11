@@ -1,0 +1,20 @@
+﻿@{
+	ViewData["Title"] = "Index";
+}
+<div class="container mt-4">
+	<table class="table table-hover">
+		<thead>
+			<tr class="text-center">
+				<th>SlotNumber</th>
+				<th>IsOccupied</th>
+				<th>SlotType</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tbody id="SlotDataBody" class="text-center"></tbody>
+	</table>
+</div>
+
+@section Scripts {
+	<script src="/js/slots.js"></script>
+}

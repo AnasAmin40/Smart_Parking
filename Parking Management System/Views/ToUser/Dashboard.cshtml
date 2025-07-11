@@ -1,0 +1,76 @@
+
+﻿@{
+	Layout = "~/Views/Shared/UserLayout.cshtml";
+}
+
+	@* <div class="text-end pe-4 pt-2">
+		Welcome, <span id="userName" class="fw-bold text-primary"></span>
+	</div> *@
+
+	<div class="container-fluid">
+		<div class="row">
+
+			<main class="col-md-10 ms-sm-auto px-md-4 tab-content pt-3">
+				<div class="tab-pane fade show active">
+					<h2>User Dashboard Overview</h2>
+
+					<section class="features-section row text-center mb-5">
+						<div class="col-md-3">
+							<div class="card p-3 text-center shadow feature-card">
+								<div class="feature-icon mb-2 mx-auto">
+									<i class="bi bi-geo-alt-fill fs-1 text-success"></i>
+								</div>
+
+								<div class="feature-value fw-bold display-6" id="totalLocations">0</div>
+								<div class=" feature-label text-muted">Parking Locations</div>
+
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="card p-3 text-center shadow feature-card">
+								<div class="feature-icon mb-2 mx-auto">
+									<i class="bi bi-calendar-check fs-1 text-success"></i>
+								</div>
+
+								<div class="feature-value fw-bold display-6" id="TotalActiveBookings">0</div>
+
+								<div class=" feature-label text-muted">Active Booking</div>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="card p-3 text-center shadow feature-card">
+								<div class="feature-icon mb-2 mx-auto">
+									<i class="bi bi-clock-history  fs-1 text-success"></i>
+								</div>
+
+								<div class="feature-value fw-bold display-6" id="TotalUpcomingBookings">0</div>
+
+								<div class=" feature-label text-muted">Upcoming Bookings</div>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="card p-3 text-center shadow feature-card">
+								<div class="feature-icon mb-2 mx-auto">
+									<i class="bi bi-journal-text fs-1 text-success"></i>
+								</div>
+
+								<div class="feature-value fw-bold display-6" id="TotalBooking">0</div>
+
+								<div class=" feature-label text-muted">Total Bookings</div>
+							</div>
+						</div>
+					</section>
+				</div>
+			</main>
+		</div>
+	</div>
+
+
+
+@section Scripts {
+	<script src="/js/locationmanage.js"></script>
+	<script src="/js/bookings.js"></script>
+	
+
+}
+
