@@ -46,16 +46,21 @@
 
             //console.log("bookingStartTime :", CheckslotAvailable.bookingStartTime);
             //console.log("bookingEndTime :", CheckslotAvailable.bookingEndTime);
-
+            let endTimeofLastBooking= '';
             if (!CheckslotAvailable.isAvaible && CheckslotAvailable.bookingconflicts.length > 0) {
 
 
                 CheckslotAvailable.bookingconflicts.forEach(every => {
-                    const date = new Date(every.bookingStartTime).toLocaleDateString();
+                    const date = new Date(every.bookingStartTime).toLocaleDateString('en-GB');
 
                     const start = new Date(every.bookingStartTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
                     const end = new Date(every.bookingEndTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    let originalEndTime = new Date(every.bookingEndTime);
+                    originalEndTime.setMinutes(originalEndTime.getMinutes() + 1);
+                    every.bookingEndTime = formatDateTimeLocal(originalEndTime);
+                    endTimeofLastBooking =every.bookingEndTime;
+                    
                     timeinfo += `
                         <div class="mt-2">
                             <span class="badge bg-secondary">Booked: ${date}</span><br/>
@@ -68,6 +73,8 @@
             let bookButton = '';
             if (statusText === 'Available') {
                 bookButton = `<button class="btn btn-success w-50 " onclick="saveSlotBookData('${slotType}',${slot.slotId},'${locationId}','${startTime}' ,'${endTime}')">Book Slot</button>`;
+            } else if (statusText === 'Occupied') {
+                bookButton = `<button class="btn btn-success w-50 " onclick="saveSlotBookData('${slotType}',${slot.slotId},'${locationId}','${endTimeofLastBooking}' ,'${endTime}')">Book Slot</button>`;
             }
 
             html += `<div class="col-md-3 mb-3">
@@ -121,15 +128,7 @@ function StoreBookingData(slotid, slotNumber, slotType, locationId) {
 
 }
 
-function ClickforBooking() {
-    const userid = sessionStorage.getItem('UserId');
-    if (userid) {
-        window.location.href = '/ToUser/BookParkingSlot';
-    }
-    else {
-        window.location.href = '/ToAuthentication/LoginPage';
-    }
-}
+
 
 function saveSlotBookData(slotType, slotId, LocationId,STime,ETime) {
     const selectSlot = {
@@ -143,4 +142,13 @@ function saveSlotBookData(slotType, slotId, LocationId,STime,ETime) {
     sessionStorage.setItem("SelectedSlot", JSON.stringify(selectSlot));
     window.location.href = '/ToUser/BookParkingSlot';
     console.log(selectSlot);
+}
+
+function formatDateTimeLocal(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
 }

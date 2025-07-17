@@ -38,7 +38,7 @@
         var locationId = $('#LocationDropdown').val();
         var slotType = $('#SlotTypeDropdown').val();
         var StartTime = $('#StartTime').val();
-
+        console.log("endTime Time:", endTime);
         $.get('/ToBooking/IsAvailable', { LocationId: locationId, Slottype: slotType, EndTime: endTime, StartTime: StartTime }, function (data) {
             $('#AvailableSlotDropdown')
                 .empty()
@@ -113,29 +113,30 @@
         }
 
     }
+    function updateTime() {
+        const startTime = document.getElementById('StartTime').value;
+        const Hours = document.getElementById('hours').value;
+
+        if (startTime && Hours) {
+            const startDate = new Date(startTime);
+            const endDate = new Date(startDate.getTime() + Hours * 60 * 60 * 1000);
+            endTime = endDate.toLocaleString('sv-SE').replace(' ', 'T').slice(0, 16);
+            //console.log("endTime Time:", endTime);
+            $('#SlotTypeDropdown').trigger('change');
+        }
+    }
+    document.getElementById('StartTime').addEventListener("change", updateTime);
+    document.getElementById('hours').addEventListener("input", updateTime);
 
     sessionStorage.removeItem("SelectedSlot");
 
 });
 
-function updateTime() {
-    const startTime = document.getElementById('StartTime').value;
-    const Hours = document.getElementById('hours').value;
-
-    if (startTime && Hours) {
-        const startDate = new Date(startTime);
-        const endDate = new Date(startDate.getTime() + Hours * 60 * 60 * 1000);
-        endTime = endDate.toLocaleString('sv-SE').replace(' ', 'T').slice(0, 16);
-        console.log("endTime Time:", endTime);
-        $('#SlotTypeDropdown').trigger('change');
-    }
-}
-document.getElementById('StartTime').addEventListener("change", updateTime);
-document.getElementById('hours').addEventListener("input", updateTime);
 
 //Book Slot Button
 function BookingSlot(event) {
     event.preventDefault();
+   
     var bookingData = {
 
         LocationId: $('#LocationDropdown').val(),
@@ -145,6 +146,12 @@ function BookingSlot(event) {
         DurationHours: $('#hours').val(),
         UserId: sessionStorage.getItem('UserId')
     };
+    debugger;
+    let hour = $('#hours').val();
+    if (hour === '0') {
+        alert('Sorry, this slot is not available for your selected time. Please select a different slot');
+        return;
+    }
     if (confirm("Warning: Once booked, details cannot be changed. Proceed?")) {
         $.ajax({
             url: '/ToBooking/NewBooking',
