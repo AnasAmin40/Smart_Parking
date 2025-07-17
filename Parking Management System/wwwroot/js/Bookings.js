@@ -343,8 +343,7 @@ function BookingHistory() {
             {
                 data: 'status',
                 render: function (data, type, row) {
-                    let color = 'btn-primary';
-                    let label = 'Active';
+                   
 
                     if (row.status === 'Completed') {
                         color = 'btn-success';
@@ -352,15 +351,22 @@ function BookingHistory() {
                     } else if (row.status === 'Cancelled') {
                         color = 'btn-danger';
                         label = 'Cancelled';
+                    } else if (row.status ==='Upcoming'){
+                        color = 'btn-secondary';
+                        label = 'Upcoming';
+                    } else if (row.status === 'Active') {
+                        color = 'btn-primary';
+                        label = 'Active';
                     }
 
-                    return `<button class="btn ${color} btn-sm">${label}</button>`;
+                    return `<button class="btn ${color} btn-sm" disabled>${label}</button>`;
                 }
             }
 
         ]
     })
 }
+
 
 
 

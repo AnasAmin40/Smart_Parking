@@ -15,21 +15,30 @@ function Login(event) {
         dataType: 'json',
         contentType: 'application/json; charset=utf-8',
         success: function (response) {
-            debugger;
+         
             console.log(response);
             if (response.success && response.token) {
                 sessionStorage.setItem('UserId', response.userId);
                 sessionStorage.setItem('Name', response.name);
                 sessionStorage.setItem('Token', response.token);
                 sessionStorage.setItem('Role', response.roles);
+                let selectslotData = sessionStorage.getItem("SelectedSlot");
                 if (response.roles === "Admin") {
-                    window.location.href = '/ToAuthentication/AdminDashBoard';
+
+                    if (selectslotData) {
+                        window.location.href = '/ToUser/BookParkingSlot';
+                    } else {
+                        window.location.href = '/ToAuthentication/AdminDashBoard';
+                    }
+                   
                 } else if (response.roles === "User") {
-                    window.location.href = '/ToUser/DashBoard';
-
+                    
+                    if (selectslotData) {
+                        window.location.href = '/ToUser/BookParkingSlot';
+                    } else {
+                        window.location.href = '/ToUser/DashBoard';
+                    }
                 }
-                alert('Login Success');
-
             } else {
                 alert(response.message);
             }

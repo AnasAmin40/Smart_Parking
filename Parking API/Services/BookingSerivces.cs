@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Parking_API.Data;
@@ -432,15 +433,20 @@ namespace Parking_API.Services
 
             var result = slots.Select(slot =>
             {
-                var conflict = conflictingBookings.FirstOrDefault(b => b.SlotId == slot.SlotId);
+                var conflicts = conflictingBookings.Where(x => x.SlotId == slot.SlotId)
+                .Select(a => new BookingConflictInfo
+                {
+                    BookingStartTime = a.StartTime,
+                    BookingEndTime = a.ExitTime,
+                    Status = a.Status
+                }).ToList();
 
                 return new SlotAvailabilityDto
                 {
                     SlotId = slot.SlotId,
                     SlotNumber = slot.SlotNumber,
-                    isAvaible = conflict == null,
-                    BookingStartTime = conflict?.StartTime,
-                    BookingEndTime = conflict?.ExitTime
+                    isAvaible = !conflicts.Any(),
+                    Bookingconflicts = conflicts
                 };
             }).ToList();
 
