@@ -7,7 +7,6 @@ function Login(event) {
         Password: $('#LoginPassword').val()
     }
 
-
     $.ajax({
         url: '/ToAuthentication/LoginData',
         type: 'POST',
@@ -48,5 +47,4 @@ function Login(event) {
         }
 
     });
-
 }
