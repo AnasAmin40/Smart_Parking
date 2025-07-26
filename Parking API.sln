@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parking API", "Parking API\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parking Management System", "Parking Management System\Parking Management System.csproj", "{9437745C-BE3C-4C27-A1FD-0F5B104E1F88}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp", "BlazorApp\BlazorApp.csproj", "{7F1D20DF-1F22-4A7B-B23A-D38755EBA51E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{9437745C-BE3C-4C27-A1FD-0F5B104E1F88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9437745C-BE3C-4C27-A1FD-0F5B104E1F88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9437745C-BE3C-4C27-A1FD-0F5B104E1F88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F1D20DF-1F22-4A7B-B23A-D38755EBA51E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F1D20DF-1F22-4A7B-B23A-D38755EBA51E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F1D20DF-1F22-4A7B-B23A-D38755EBA51E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F1D20DF-1F22-4A7B-B23A-D38755EBA51E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

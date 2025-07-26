@@ -1,0 +1,222 @@
+﻿@page "/"
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject NavigationManager navigationManager
+@using BlazorApp.Model
+<PageTitle>Home</PageTitle>
+
+
+
+<main class="container my-5">
+
+	<section class="hero-section text-center mb-5">
+		<h1 class="display-4 fw-bold">Find & Reserve Parking Slots Easily</h1>
+		<p class="lead">SmartPark helps you locate available parking and book in advance to save time and avoid hassle.</p>
+		<form class="row g-3 justify-content-center mt-4">
+			<div class="col-md-3">
+				<label>Start Time</label>
+				<input @bind="StartTime" id="StartTime" type="datetime-local" class="form-control" />
+			</div>
+			<div class="col-md-3">
+				<label>End Time</label>
+				<input @bind="EndTime" id="EndTime" type="datetime-local" class="form-control" />
+			</div>
+			<div class="col-md-3">
+				<label>Location</label>
+				<select id="LocationDropdown" class="form-select">
+					<option value="">-- Select Location --</option>
+					@foreach (var location in locations)
+					{
+						<option value="@location.LocationId">@location.LocationName</option>
+					}
+				</select>
+			</div>
+
+			<div class="col-md-3">
+				<label>Slot Type</label>
+				<select id="SlotTypeDropdown" class="form-select">
+					<option value="">-- Select Slot Type --</option>
+					<option value="Car">Car</option>
+					<option value="Bike">Bike</option>
+					<option value="Bus">Bus</option>
+					<option value="VIP_Car">VIP_Car</option>
+				</select>
+			</div>
+
+			<div class="col-md-2">
+				<NavLink href="/counter">
+
+
+					<button @onclick="NaviagePage" id="SearchParking" type="button" class="btn btn-primary w-100" disabled>
+						Search Parking
+					</button>
+				</NavLink>
+			</div>
+
+
+		</form>
+	</section>
+
+
+	<section class="features-section row text-center mb-5">
+		<div class="col-md-3">
+			<div class="card p-3">
+				<div class="mb-3">
+					<i class="bi bi-speedometer2 fs-1 text-primary"></i>
+				</div>
+				<h5>Real-Time Availability</h5>
+				<p>See parking slots updated live to avoid searching endlessly.</p>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="card p-3">
+				<div class="mb-3">
+					<i class="bi bi-calendar-check fs-1 text-success"></i>
+				</div>
+				<h5>Easy Booking</h5>
+				<p>Reserve your parking slot in advance with just a few clicks.</p>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="card p-3">
+				<div class="mb-3">
+					<i class="bi bi-clock fs-1 text-warning"></i>
+				</div>
+				<h5>Timer & Billing</h5>
+				<p>Track your parking time and get billed accordingly.</p>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="card p-3">
+				<div class="mb-3">
+					<i class="bi bi-gear fs-1 text-danger"></i>
+				</div>
+				<h5>Admin Management</h5>
+				<p>Admins can easily manage parking slots and availability.</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- How It Works -->
+	<section class="mb-5">
+		<h2 class="text-center mb-4">How It Works</h2>
+		<div class="row text-center">
+			<div class="col-md-4">
+				<h4>1. Search</h4>
+				<p>Enter your location and Slot Type to find available parking.</p>
+			</div>
+			<div class="col-md-4">
+				<h4>2. Book</h4>
+				<p>Select your preferred slot and reserve it instantly.</p>
+			</div>
+			<div class="col-md-4">
+				<h4>3. Park & Pay</h4>
+				<p>Enjoy hassle-free parking with timer and billing.</p>
+			</div>
+		</div>
+	</section>
+
+	<section class="text-center">
+
+
+		<a asp-controller="ToAuthentication" asp-action="LoginPage" class="btn btn-outline-primary btn-lg">Admin/User Login</a>
+		<a asp-controller="Home" asp-action="Register" class="btn btn-outline-secondary btn-lg">User Register</a>
+		@* <a href="/ToBooking/GetUpcomingBooking?userId=2" class="btn btn-outline-secondary btn-lg">User Register</a> *@
+
+
+	</section>
+
+</main>
+
+@code {
+	private List<LocationDTO> locations = new();
+	// private int selectedLocationId;
+	private DateTime StartTime { get; set; }
+	private DateTime EndTime { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		var response = await Http.GetFromJsonAsync<ApiResponse<List<LocationDTO>>>("http://localhost:5266/api/Booking/GetAllLocation");
+
+		locations = response?.Value;
+
+
+		var now = DateTime.Now;
+
+		StartTime = new DateTime(now.Year, now.Month, now.Day, 0, 0, 0);
+		EndTime = new DateTime(now.Year, now.Month, now.Day, 23, 59, 0);
+	}
+
+
+
+
+}
+@code {
+	private void NaviagePage()
+	{
+		navigationManager.NavigateTo("/counter");
+	}
+}
+
+@* <script src="/js/home.js"></script> *@
+<script src="js/jquery/dist/jquery.min.js"></script>
+
+
+<script>
+	$(document).ready(function () {
+
+		$('#LocationDropdown').on('change', function () {
+			SaveTime();
+			let locationId = $(this).val();
+			let Name = $('#LocationDropdown option:selected').text();
+			console.log(`locationid : ${locationId} and Name : ${Name}`);
+			sessionStorage.setItem("Search_Location", locationId);
+			sessionStorage.setItem("Location_Name", Name);
+		});
+
+		$('#SlotTypeDropdown').on('change', function () {
+			SaveTime();
+			let slotType = $(this).val();
+			sessionStorage.setItem("slotType", slotType);
+		});
+	});
+
+	const locationDropdown = document.getElementById('LocationDropdown');
+	const slotTypeDropdown = document.getElementById('SlotTypeDropdown');
+	const searchButton = document.getElementById('SearchParking');
+
+	function toggleSearchButton() {
+	if (locationDropdown.value != 'Select Location' && locationDropdown.value != '' && slotTypeDropdown.value != 'Slot Type' && slotTypeDropdown.value != '' ) {
+		searchButton.disabled = false;
+	} else {
+		searchButton.disabled = true;
+	}
+	}
+	locationDropdown.addEventListener('change', toggleSearchButton);
+	slotTypeDropdown.addEventListener('change', toggleSearchButton);
+
+
+	function SaveTime() {
+		const startT = document.getElementById("StartTime").value;
+		const endT = document.getElementById("EndTime").value;
+
+		if (startT != '' && endT != '') {
+
+			const startTime = new Date(startT);
+			const EndTime = new Date(endT);
+
+
+			if (startTime < EndTime) {
+				sessionStorage.setItem("StartTime", startT);
+				sessionStorage.setItem("EndTime", endT);
+
+
+			}
+			else {
+				console.log("End Time must be after Start Time!");
+			}
+
+		}
+	}
+
+</script> 
