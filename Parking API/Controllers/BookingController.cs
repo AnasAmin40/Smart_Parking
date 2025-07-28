@@ -94,12 +94,7 @@ namespace Parking_API.Controllers
         }
 
 
-        [HttpGet("GetAvailableSlot")]
-        public async Task<IActionResult> GetAvailableSlot(int locationId, string SlotType)
-        {
-            var slots = await _iBooking.GetAvailableSlot(locationId, SlotType);
-            return Ok(slots);
-        }
+      
 
         [HttpGet("GetAllSlots/{locationid}")]
         public async Task<IActionResult> GetAllSlots(int locationid,string slotType)

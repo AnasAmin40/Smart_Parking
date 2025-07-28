@@ -1,0 +1,193 @@
+﻿@page "/SearchPage"
+@using BlazorApp.Model
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+@inject HttpClient httpClient
+@inject NavigationManager Navigation
+
+@if (DataLoaded)
+{
+    <div>
+        <h2 class="text-primary">Available Parking Slots</h2>
+        <p id="search-info" class="text-muted">Showing available slots for Location ID: @LocationId, Type: @SlotType</p>
+    </div>
+}
+
+
+
+@if (!DataLoaded)
+{
+    <h1>Loading...</h1>
+}
+else if(AllSlots.Count == 0)
+{
+    <p class="text-danger"> ❌ No Available Slot found.</p>
+}
+else if (AllSlots == null || !AllSlots.Any())
+{
+    <p>No slots found.</p>
+}
+
+else
+{
+@*     <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Slot Number</th>
+                <th>Type</th>
+                <th>Price/Hour</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var slot in Availability)
+            {
+                <tr>
+                    <td>@slot.SlotId</td>
+                    <td>@slot.SlotNumber</td>
+                    <td>@slot.IsAvailable</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+ *@    <div class="row">
+        @foreach(var slot in AllSlots)
+        {
+            var slotAvailability = Availability.FirstOrDefault(s => s.SlotId == slot.SlotId);
+            string StatusText = "Unknow";
+            string cardClass = "border-secondary";
+            string StatusColor = "text-muted";
+            string BookingButton = "";
+            string endTimeOfLastBooking = EndTime;
+            RenderFragment timeInfo = null;
+
+
+            if (slotAvailability != null)
+            {
+                @* @JS.InvokeVoidAsync("console.log", $"IsAvailable: {slotAvailability.IsAvailable}"); *@
+
+                StatusText = slotAvailability.IsAvailable ? "Available" : "Occupied";
+                cardClass =slotAvailability.IsAvailable ? "border-success" : "border-danger";
+                StatusColor = slotAvailability.IsAvailable ? "text-success" : "text-danger";
+
+
+                if(!slotAvailability.IsAvailable && slotAvailability.Bookingconflicts?.Any()==true)
+                {
+                    var LastBooking = slotAvailability.Bookingconflicts.Last();
+                    var originalEndTime = DateTime.Parse(LastBooking.BookingEndTime.Value.ToString()).AddMinutes(1);
+                    endTimeOfLastBooking = originalEndTime.ToString("yyyy-MM-ddTHH:mm");
+
+
+                    timeInfo = __builder =>
+                    {
+                        foreach(var conflict in slotAvailability.Bookingconflicts)
+                        {
+                            var bookingstart = conflict.BookingStartTime;
+                            var bookingend = conflict.BookingEndTime;
+
+                            var date = bookingstart?.ToString("dd/MM/yyyy");
+                            var start = bookingstart?.ToString("HH:mm");
+                            var end = bookingend?.ToString("HH:mm");
+                           
+                            __builder.AddMarkupContent(0, $@"
+                            <div class='mt-2'>
+                                <span class='badge bg-secondary'>Booked: {date}</span><br/>
+                                <span class='badge bg-light text-dark'>Time: {start} - {end}</span><br/>
+                                <span class='badge bg-light text-dark'>Booked Status: {conflict.Status}</span>
+
+                            </div>");
+                        }
+                    };
+
+                }
+
+
+                <div class="col-md-3 mb-3">
+                    <div class="card @cardClass">
+                        <div class="card-body">
+                            <h5 class="card-title" > Slot : @slot.SlotNumber</h5>
+                            <p class="@StatusColor fw-bold">Type: @SlotType || Status: @StatusText</p>
+                            @timeInfo
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+}
+
+
+@code {
+    private List<SlotDTO> AllSlots = new();
+    private List<SlotAvailabilityDto> Availability = new();
+    private string LocationId;
+    private string SlotType;
+    private string LocationName;
+    private string StartTime;
+    private string EndTime;
+    private bool DataLoaded = false;
+
+
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            try
+            {
+                LocationId = await JS.InvokeAsync<string>("getSessionValue", "Search_Location");
+                SlotType = await JS.InvokeAsync<string>("getSessionValue", "slotType");
+                LocationName = await JS.InvokeAsync<string>("getSessionValue", "Location_Name");
+                StartTime = await JS.InvokeAsync<string>("getSessionValue", "StartTime");
+                EndTime = await JS.InvokeAsync<string>("getSessionValue", "EndTime");
+                await DataLoad();
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("JS call failed: " + ex.Message);
+            }
+
+            StateHasChanged();
+        }
+
+    }
+
+
+    // OnInitializedAsync
+    private async Task DataLoad()
+    {
+        try
+        {
+
+            var slotUrl = $"http://localhost:5266/api/Booking/GetAllSlots/{LocationId}?slotType={SlotType}";
+            var response = await httpClient.GetFromJsonAsync<ApiResponse<List<SlotDTO>>>(slotUrl);
+            AllSlots = response?.Value;
+
+            Availability = await httpClient.GetFromJsonAsync<List<SlotAvailabilityDto>>($"http://localhost:5266/api/Booking/IsAvailableSlot?LocationId={LocationId}&StartTime={StartTime:yyyy-MM-ddTHH:mm}&EndTime={EndTime:yyyy-MM-ddTHH:mm}&Slottype={SlotType}");
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine("Request failed: " + ex.Message);
+            // Optionally: show message to user
+        }
+
+        StateHasChanged();
+        DataLoaded = true;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

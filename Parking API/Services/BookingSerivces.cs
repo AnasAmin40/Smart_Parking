@@ -445,7 +445,7 @@ namespace Parking_API.Services
                 {
                     SlotId = slot.SlotId,
                     SlotNumber = slot.SlotNumber,
-                    isAvaible = !conflicts.Any(),
+                    IsAvailable = !conflicts.Any(),
                     Bookingconflicts = conflicts
                 };
             }).ToList();

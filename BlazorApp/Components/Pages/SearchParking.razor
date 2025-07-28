@@ -1,1 +1,98 @@
 ﻿@page "/SearchParking"
+@using BlazorApp.Model
+
+@inject IJSRuntime JS
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+
+
+@* <h3>Location id : @LocationId</h3> *@
+<h3>@(LocationId is null ? "Loading..." : $"Location id : {LocationId}")</h3>
+<button type="button" @onclick="TestLog">Test Log</button>
+@code {
+    private string LocationId;
+    private async Task TestLog()
+    {
+        Console.WriteLine("Button clicked");
+        await JS.InvokeVoidAsync("console.log", "Button clicked");
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            try
+            {
+                LocationId = await JS.InvokeAsync<string>("getSessionValue", "Search_Location");
+                Console.WriteLine("Blazor (Output window) LocationId: " + LocationId);
+                await JS.InvokeVoidAsync("console.log", "Browser console LocationId: " + LocationId);
+
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("JS call failed: " + ex.Message);
+            }
+
+            StateHasChanged();
+        }
+    }
+}
+
+
+@* 
+@code{
+    private string LocationId;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            LocationId = await JS.InvokeAsync<string>("getSessionValue", "Search_Location"
+    );
+            Console.WriteLine($"LocationId: {LocationId}");
+
+            StateHasChanged();
+            
+        }
+    } 
+
+
+
+
+
+
+
+
+
+
+
+    // private List<SlotDTO> AllSlots = new();
+    // private List<SlotAvailabilityDto> Availability = new();
+	// private string SlotType;
+	// private string LocationName;
+	// private string StartTime;
+	// private string EndTime;
+	// private bool DataLoaded = false;
+
+
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     LocationId = await JS.InvokeAsync<string>("sessionStorage.getItem", "Search_Location");
+    //     SlotType = await JS.InvokeAsync<string>("sessionStorage.getItem", "Search_slotType");
+    //     LocationName = await JS.InvokeAsync<string>("sessionStorage.getItem", "Location_Name");
+    //     StartTime = await JS.InvokeAsync<string>("sessionStorage.getItem", "StartTime");
+    //     EndTime = await JS.InvokeAsync<string>("sessionStorage.getItem", "EndTime");
+
+    //     if (!string.IsNullOrEmpty(LocationId) && !string.IsNullOrEmpty(SlotType))
+    //     {
+    //         AllSlots = await Http.GetFromJsonAsync<List<SlotDTO>>("http://localhost:5266/api/Booking/GetAllSlots/{LocationId}?slotType={SlotType}");
+
+    //         Availability = await Http.GetFromJsonAsync<List<SlotAvailabilityDto>>("http://localhost:5266/api/Booking/IsAvailableSlot?LocationId={LocationId}&StartTime={StartTime:yyyy-MM-ddTHH:mm}&EndTime={EndTime:yyyy-MM-ddTHH:mm}&Slottype={SlotType}");
+    //         DataLoaded = true;
+    //     }
+    // }
+
+}*@

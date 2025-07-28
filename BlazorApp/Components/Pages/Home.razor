@@ -44,7 +44,7 @@
 			</div>
 
 			<div class="col-md-2">
-				<NavLink href="/counter">
+				<NavLink href="/SearchPage">
 
 
 					<button @onclick="NaviagePage" id="SearchParking" type="button" class="btn btn-primary w-100" disabled>
@@ -169,7 +169,7 @@
 			SaveTime();
 			let locationId = $(this).val();
 			let Name = $('#LocationDropdown option:selected').text();
-			console.log(`locationid : ${locationId} and Name : ${Name}`);
+			
 			sessionStorage.setItem("Search_Location", locationId);
 			sessionStorage.setItem("Location_Name", Name);
 		});

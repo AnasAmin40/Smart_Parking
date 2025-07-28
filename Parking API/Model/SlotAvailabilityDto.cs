@@ -4,7 +4,7 @@
     {
         public int SlotId { get; set; }
         public string? SlotNumber { get; set; }
-        public bool isAvaible { get; set; }
+        public bool IsAvailable { get; set; }
        
         public List<BookingConflictInfo> Bookingconflicts { get; set; }
     }
