@@ -79,9 +79,13 @@ namespace Parking_API.Services
             }
         }
 
-        public Task<IActionResult> AddNewUserByUser(Users data)
+        public async Task<IActionResult> AddNewUserByUser(Users data)
         {
-            throw new System.NotImplementedException();
+            data.RoleId = 2;
+            data.Active = true;
+            await _db.UsersTable.AddAsync(data);
+            await _db.SaveChangesAsync();
+            return new OkObjectResult(data);
         }
 
         public async Task<IActionResult> DeleteUser(int id)

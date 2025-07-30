@@ -30,7 +30,7 @@ namespace Parking_API.Model
 
         public int RoleId { get; set; }
 
-        //[JsonIgnore]
+        [JsonIgnore]
         public Role? Role { get; set; } 
 
     }

@@ -39,16 +39,21 @@
 
     public class ParkingLocation
     {
-        
+
         public int ParkingLocationId { get; set; }
-       
+
         public string? Name { get; set; }
 
-     
+
         public string? City { get; set; }
 
         public int TotalSlots { get; set; }
 
-      
+
     }
+
+
+
+
+   
 }

@@ -1,12 +1,13 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Parking_API.Data;
 using Parking_API.Model.JWTSevices;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Parking_API.Controllers.Authentication
 {
@@ -20,8 +21,10 @@ namespace Parking_API.Controllers.Authentication
         {
             _db = db;
             _SecretKey = configuration.GetValue<string>("Jwt:key");
-        } 
+        }
 
+        [AllowAnonymous]
+        [IgnoreAntiforgeryToken]
         [HttpPost("UserLogin")]
         public async Task<ActionResult<LoginResponse>> Login(LoginRequest LoginData)
         {
@@ -57,7 +60,12 @@ namespace Parking_API.Controllers.Authentication
             LoginResponse response = new LoginResponse()
             {
                 Token = tokenHandler.WriteToken(Token),
-                usersTable = user
+                usersTable = user,
+                IsSuccess = true,
+                Message = "Login Successful",
+                Role = user.Role?.Roles ?? "User",
+                userID=user.Id,
+                Username = user.Name
             };
             return Ok(response);
         }
