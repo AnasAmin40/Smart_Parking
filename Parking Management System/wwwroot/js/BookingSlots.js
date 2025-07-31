@@ -47,7 +47,7 @@
             console.log(data);
 
             $.each(data, function (index, item) {
-                if (item.isAvaible === true) {
+                if (item.isAvailable === true) {
 
                     $('#AvailableSlotDropdown').append(
                         $('<option>', {

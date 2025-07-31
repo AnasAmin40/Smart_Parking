@@ -7,4 +7,10 @@ namespace BlazorApp.Model
         [JsonPropertyName("value")]
         public T Value { get; set; }
     }
+
+    public class CountResponse
+    {
+        [JsonPropertyName("value")]
+        public int Value { get; set; }
+    }
 }

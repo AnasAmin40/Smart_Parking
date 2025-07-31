@@ -1,0 +1,128 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager navigationManager
+
+
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-expand-lg custom-navbar bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" style="color:black" href="/">SmartPark Management System</a>
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a href="/" class="nav-link  aria-current="page">Home</a>
+                        </li>
+
+
+                    </ul>
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        @* @if (User.Identity.IsAuthenticated)
+                        {
+
+                            <li class="nav-item">
+                                <span class="nav-link text-primary">Welcome, @User.Identity.Name!</span>
+                            </li> *@
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center " onclick="logout();"
+                               asp-controller="ToAuthentication" asp-action="LogOut">
+                                <i class="bi bi-box-arrow-right me-2">	</i> Log Out
+                            </a>
+                        </li>
+                        @* } *@
+                    </ul>
+
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block sidebar">
+                <div class="sidebar-sticky pt-3">
+                    <ul class="nav flex-column">
+                        
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center @(isActive("userDashboard") ? "active" : "")">
+                                <i class="bi bi-speedometer2 me-2"></i> User Dashboard
+                            </a>
+                        </li>
+
+
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center @(isActive("userDashboard") ? "active" : "")">
+                                <i class="bi bi-journal-check me-2"></i> Book Slot
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center @(isActive("userDashboard") ? "active" : "")">
+                                <i class="bi bi-people me-2"></i> Current Booking
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center @(isActive("userDashboard") ? "active" : "")">
+                                <i class="bi bi-people me-2"></i> Upcoming Booking
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center @(isActive("userDashboard") ? "active" : "")">
+                                <i class="bi bi-clock-history me-2"></i> Booking History
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center " onclick="logout();"
+                               asp-controller="ToAuthentication" asp-action="LogOut">
+                                <i class="bi bi-box-arrow-right me-2">	</i> Log Out
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </nav>
+            <div >
+                <div role="main" class="pb-3">
+                    @Body
+                </div>
+            </div>
+
+        </div>
+    </main>
+    <footer class="text-white" id="footerid">
+        <div class="container text-center">
+            SmartPark Management System ©2025
+        </div>
+    </footer>
+</body>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/datatable/datatables.js"></script>
+<script src="~/datatable/datatables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+@code {
+  
+    private string currentPath = "";
+
+    private bool isActive(string Path)
+    {
+        currentPath = navigationManager.ToBaseRelativePath(navigationManager.Uri).ToLower();
+        return currentPath.StartsWith(Path.ToLower());
+    }
+}

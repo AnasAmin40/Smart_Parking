@@ -1,0 +1,124 @@
+﻿@using BlazorApp.Components.Layout
+@using BlazorApp.Model
+@rendermode InteractiveServer
+@layout UserRazorLayout
+@page "/userDashboard"
+@inject HttpClient httpClient
+@inject IJSRuntime jS
+
+
+<div class="container-fluid">
+	<div class="row">
+
+		<main class="col-md-10 ms-sm-auto px-md-4 tab-content pt-3">
+			<div class="tab-pane fade show active">
+				<h2>User Dashboard Overview</h2>
+
+				<section class="features-section row text-center mb-5">
+					<div class="col-md-3">
+						<div class="card p-3 text-center shadow feature-card">
+							<div class="feature-icon mb-2 mx-auto">
+								<i class="bi bi-geo-alt-fill fs-1 text-success"></i>
+							</div>
+
+							<div class="feature-value fw-bold display-6" >@TotalLocations</div>
+							<div class=" feature-label text-muted">Parking Locations</div>
+
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="card p-3 text-center shadow feature-card">
+							<div class="feature-icon mb-2 mx-auto">
+								<i class="bi bi-calendar-check fs-1 text-success"></i>
+							</div>
+
+							<div class="feature-value fw-bold display-6" >@TotalActiveBookings</div>
+
+							<div class=" feature-label text-muted">Active Booking</div>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="card p-3 text-center shadow feature-card">
+							<div class="feature-icon mb-2 mx-auto">
+								<i class="bi bi-clock-history  fs-1 text-success"></i>
+							</div>
+
+							<div class="feature-value fw-bold display-6" >@TotalUpcomingBookings</div>
+
+							<div class=" feature-label text-muted">Upcoming Bookings</div>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="card p-3 text-center shadow feature-card">
+							<div class="feature-icon mb-2 mx-auto">
+								<i class="bi bi-journal-text fs-1 text-success"></i>
+							</div>
+
+							<div class="feature-value fw-bold display-6">@TotalBooking</div>
+
+							<div class=" feature-label text-muted">Total Bookings</div>
+						</div>
+					</div>
+				</section>
+			</div>
+		</main>
+	</div>
+</div>
+
+@code {
+	private int TotalLocations { get; set; } = 0;
+	private int TotalActiveBookings { get; set; } = 0;
+	private int TotalUpcomingBookings { get; set; } = 0;
+	private int TotalBooking { get; set; } = 0;
+	private string UserId = "";
+
+	protected override async Task OnInitializedAsync()
+	{
+		var getTotalLocation = await httpClient.GetFromJsonAsync<CountResponse>("http://localhost:5266/api/Location/CountLocation");
+		if (getTotalLocation != null)
+		{
+			TotalLocations = getTotalLocation.Value ;
+		}
+
+		// var getTotalUpcomingBooking = await httpClient.GetFromJsonAsync<CountResponse>($"http://localhost:5266/api/Booking/UpcomingBookingCounter/2");
+		// if (getTotalUpcomingBooking != null)
+		// {
+		// 	TotalUpcomingBookings = getTotalUpcomingBooking.Value;
+		// }
+
+
+	}
+
+	private async Task LoadData()
+	{
+		UserId = await jS.InvokeAsync<string>("getSessionValue", "userId");
+		await jS.InvokeVoidAsync("console.log", $"User Id : {UserId}");
+		var getTotalActiveBooking = await httpClient.GetFromJsonAsync<CountResponse>($"http://localhost:5266/api/Booking/ActiveBookingCounter/{UserId}");
+		await jS.InvokeVoidAsync("console.log", $"getTotalActiveBooking  : {getTotalActiveBooking}");
+		if (getTotalActiveBooking != null)
+		{
+			TotalActiveBookings = getTotalActiveBooking.Value;
+		}
+
+
+		var getTotalUpcomingBooking = await httpClient.GetFromJsonAsync<CountResponse>($"http://localhost:5266/api/Booking/UpcomingBookingCounter/{UserId}");
+		await jS.InvokeVoidAsync("console.log", $"getTotalUpcomingBooking  : {getTotalUpcomingBooking}");
+		if (getTotalUpcomingBooking != null)
+		{
+			TotalUpcomingBookings = getTotalUpcomingBooking.Value;
+		}
+
+		TotalBooking = TotalActiveBookings + TotalUpcomingBookings;
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			
+			await LoadData();
+			StateHasChanged();
+		}
+		
+	}
+}

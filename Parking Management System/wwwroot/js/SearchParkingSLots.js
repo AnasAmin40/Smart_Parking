@@ -36,9 +36,9 @@
             let cardClass = "border-secondary";
             let statusColor = "text-muted";
             if (CheckslotAvailable) {
-                statusText = !CheckslotAvailable.isAvaible ? "Occupied" : "Available";
-                cardClass = !CheckslotAvailable.isAvaible ? "border-danger" : "border-success";
-                statusColor = !CheckslotAvailable.isAvaible ? "text-danger" : "text-success";
+                statusText = !CheckslotAvailable.isAvailable ? "Occupied" : "Available";
+                cardClass = !CheckslotAvailable.isAvailable ? "border-danger" : "border-success";
+                statusColor = !CheckslotAvailable.isAvailable ? "text-danger" : "text-success";
             }
 
 
@@ -47,7 +47,7 @@
             //console.log("bookingStartTime :", CheckslotAvailable.bookingStartTime);
             //console.log("bookingEndTime :", CheckslotAvailable.bookingEndTime);
             let endTimeofLastBooking= '';
-            if (!CheckslotAvailable.isAvaible && CheckslotAvailable.bookingconflicts.length > 0) {
+            if (!CheckslotAvailable.isAvailable && CheckslotAvailable.bookingconflicts.length > 0) {
 
 
                 CheckslotAvailable.bookingconflicts.forEach(every => {
