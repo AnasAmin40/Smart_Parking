@@ -1,0 +1,250 @@
+﻿@page "/bookslot"
+@using BlazorApp.Components.Layout
+@using BlazorApp.Model
+@layout UserRazorLayout
+@inject HttpClient httpClient
+@inject IJSRuntime jS
+@rendermode InteractiveServer
+
+<main>
+    <div class="container-fluid">
+        <div class="row">
+
+
+            <div class="col-md-10 ms-sm-auto px-md-4 tab-content pt-3">
+
+                <div class="tab-pane fade show active" id="book-slot" role="tabpanel">
+                    <h3>Book Parking Slot</h3>
+                    <form class="row g-3" @onsubmit="SubmitFunction">
+                        <div class="col-md-4">
+                            <label class="form-label">Start Time</label>
+                            <input @bind-value="StartTime"
+                                   @bind-value:event="oninput"
+                                   @onchange="OnchangeTime" type="datetime-local" class="form-control" />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Duration (hours)</label>
+                            <input @onchange="OnDurationChange" type="number" class="form-control" min="1" max="12" value="1" />
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <label class="form-label">Select Location</label>
+                            <select @onchange="OnchangeLocation" class="form-select">
+                                <option selected disabled>Select Location</option>
+                                @foreach (var location in Locations)
+                                {
+                                    <option value="@location.LocationId">@location.LocationName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Slot Type</label>
+                            <select @onchange="OnchangeSlotType" class="form-select" disabled="@isLocationDropdownDisabled">
+                                <option selected disabled>Slot Type</option>
+                                <option value="Car">Car</option>
+                                <option value="Bike">Bike</option>
+                                <option value="Bus">Bus</option>
+                                <option value="VIP_Car">VIP_Car</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <label class="form-label">Select Slot</label>
+
+                            <select @onchange="OnslotChange" class="form-select" disabled="@isSlotDropdownDisabled">
+                                <option selected disabled>Select Slot</option>
+                                @foreach (var slot in slotAvailabilityDtos)
+                                {
+                                    <option value="@slot.SlotId">@slot.SlotNumber</option>
+                                }
+                            </select>
+                        </div>
+
+
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-success">Book Slot</button>
+
+                        </div>
+                    </form>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+</main>
+
+@code {
+
+    private DateTime StartTime { get; set; } = DateTime.Now;
+    private DateTime EndTime { get; set; } = DateTime.Now.AddHours(1);
+    private int Duration { get; set; } = 1;
+    private int UserId { get; set; } = 0;
+    private int LocationId { get; set; } = 0;
+    private string SlotType { get; set; } = string.Empty;
+    private int SlotId { get; set; } = 0;
+    private List<LocationDTO> Locations = new();
+    private List<SlotAvailabilityDto> slotAvailabilityDtos = new();
+    private bool isLocationDropdownDisabled = true;
+    private bool isSlotDropdownDisabled = true;
+
+
+
+    public class BookingRequest
+    {
+        public int UserId { get; set; }
+        public int LocationId { get; set; }
+        public int SlotId { get; set; } = 0;
+        public string? SlotType { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
+        public int? DurationHours { get; set; }
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await httpClient.GetFromJsonAsync<ApiResponse<List<LocationDTO>>>("http://localhost:5266/api/Booking/GetAllLocation");
+
+        Locations = response?.Value;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetUserId();
+            // StateHasChanged();
+        }
+    }
+
+    private async Task GetUserId()
+    {
+        try
+        {
+            string id = await jS.InvokeAsync<string>("getSessionValue", "userId");
+
+            if(int.TryParse(id, out int parsedId))
+            {
+                UserId = parsedId;
+            }
+            else
+            {
+                await jS.InvokeVoidAsync("console.error", "Id is not found"); 
+            }
+        }
+        catch(Exception ex)
+        {
+            await jS.InvokeVoidAsync("console.log", $"Exception is GetUserID : {ex.Message}");
+        }
+        
+    }
+
+    private async Task OnchangeTime(ChangeEventArgs e)
+    {
+        if (DateTime.TryParse(e.Value?.ToString(), out var Time))
+        {
+            StartTime = Time;
+            EndTime = StartTime.AddHours(Duration);
+            await AvailableSlot();
+            // StateHasChanged();
+        }
+    }
+
+    private async Task OnchangeLocation(ChangeEventArgs e)
+    {
+        LocationId = int.Parse(e.Value.ToString());
+
+        if (LocationId!=0)
+        {
+            isLocationDropdownDisabled = false;
+            await AvailableSlot();
+            // StateHasChanged();
+        }
+    }
+
+    private async Task OnchangeSlotType(ChangeEventArgs e)
+    {
+        SlotType = e.Value?.ToString();
+        
+        if (!string.IsNullOrEmpty(SlotType))
+        {
+            isSlotDropdownDisabled = false;
+            await AvailableSlot();
+            StateHasChanged();
+        }
+        else
+        {
+            await jS.InvokeVoidAsync("console.error", "error in onchangeslotType");
+        }
+    }
+
+    private async void OnDurationChange(ChangeEventArgs e)
+    {
+        Duration = e.Value?.ToString() != null ? int.Parse(e.Value.ToString()) : 1;
+        EndTime = StartTime.AddHours(Duration);
+
+        await AvailableSlot();
+        // StateHasChanged();
+    }
+
+    private async Task OnslotChange(ChangeEventArgs e)
+    {
+        SlotId = int.Parse(e.Value.ToString());
+    }
+
+
+    private async Task AvailableSlot()
+    {
+        if (LocationId == 0 || string.IsNullOrEmpty(SlotType))
+        {
+            return;
+        }
+        var data = await httpClient.GetFromJsonAsync<List<SlotAvailabilityDto>>($"http://localhost:5266/api/Booking/IsAvailableSlot?LocationId={LocationId}&StartTime={StartTime}&EndTime={EndTime}&Slottype={SlotType}");
+        
+        if(data != null)
+        {
+            slotAvailabilityDtos = data.Where(s => s.IsAvailable == true).ToList();
+        }
+        else
+        {
+            await jS.InvokeVoidAsync("console.error", "No data returned from API");
+        }
+        
+    }
+
+
+    private async Task SubmitFunction()
+    {
+        if(LocationId == 0 || string.IsNullOrEmpty(SlotType) || SlotId == 0)
+        {
+            await jS.InvokeVoidAsync("alert", "Please select all fields before booking.");
+            return;
+        }
+
+        var AllData = new BookingRequest
+        {
+            StartTime = StartTime,
+            DurationHours = Duration,
+            LocationId = LocationId,
+            SlotType = SlotType,
+            SlotId = SlotId,
+            UserId = UserId
+        };
+
+        
+        var response = await httpClient.PostAsJsonAsync("http://localhost:5266/api/Booking/CreateBooking", AllData);
+        if (response.IsSuccessStatusCode)
+        {
+            await jS.InvokeVoidAsync("alert", "Booking Created Successfully");
+        }
+       
+    }
+}

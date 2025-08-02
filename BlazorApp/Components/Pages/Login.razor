@@ -43,6 +43,11 @@
     
 </div>
 <h4>@LoginStatus</h4>
+@if (LoginStatus != "Not")
+{
+    
+<a href="/userDashboard" class="btn btn-outline-secondary btn-lg">User Dashboard</a>
+}
 @code {
 
     public class LoginData
@@ -69,7 +74,7 @@
     private string EmailValidationMessage { get; set; } = string.Empty;
     private string PasswordValidationMessage { get; set; } = string.Empty;
 
-    private string LoginStatus = "NOt";
+    private string LoginStatus = "Not";
 
     private async Task OnButton()
     {

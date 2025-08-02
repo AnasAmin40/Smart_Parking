@@ -1,5 +1,6 @@
 ﻿using Amazon.Runtime.Internal;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using Parking_API.Interface;
@@ -40,12 +41,17 @@ namespace Parking_API.Controllers
         [HttpPost("CreateBooking")]
         public async Task<IActionResult> CreateBooking(BookingRequest bookingData)
         {
-            {
-            }
+
+            if (bookingData.UserId == 0 || bookingData.LocationId == 0 || bookingData.SlotId == 0 || bookingData.SlotType == "")
+                return BadRequest("User ID, Location ID, and Slot ID are required.");
 
             await _iBooking.CreateBooking(bookingData);
-
-            return Ok();
+            var respone = new
+            {
+                message = "Booking Created Successfully",
+                Sueccess = true
+            };
+            return Ok(respone);
 
         }
 

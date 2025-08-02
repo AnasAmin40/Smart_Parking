@@ -53,32 +53,32 @@
                     <ul class="nav flex-column">
                         
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center @(isActive("userDashboard") ? "active" : "")">
+                            <a href="/userDashboard" class="nav-link d-flex align-items-center @(isActive("userDashboard") ? "active" : "")">
                                 <i class="bi bi-speedometer2 me-2"></i> User Dashboard
                             </a>
                         </li>
 
 
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center @(isActive("userDashboard") ? "active" : "")">
+                            <a href="/bookslot" class="nav-link d-flex align-items-center @(isActive("bookslot") ? "active" : "")">
                                 <i class="bi bi-journal-check me-2"></i> Book Slot
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center @(isActive("userDashboard") ? "active" : "")">
+                            <a class="nav-link d-flex align-items-center @(isActive("userDahboard") ? "active" : "")">
                                 <i class="bi bi-people me-2"></i> Current Booking
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center @(isActive("userDashboard") ? "active" : "")">
+                            <a class="nav-link d-flex align-items-center @(isActive("userDashoard") ? "active" : "")">
                                 <i class="bi bi-people me-2"></i> Upcoming Booking
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center @(isActive("userDashboard") ? "active" : "")">
+                            <a class="nav-link d-flex align-items-center @(isActive("userDahboard") ? "active" : "")">
                                 <i class="bi bi-clock-history me-2"></i> Booking History
                             </a>
                         </li>
@@ -95,7 +95,15 @@
             </nav>
             <div >
                 <div role="main" class="pb-3">
-                    @Body
+                    <ErrorBoundary >
+                        <ChildContent>
+                            @Body
+                        </ChildContent>
+                        <ErrorContent>
+                            An Error Occurred.
+                        </ErrorContent>
+                    </ErrorBoundary>
+                    
                 </div>
             </div>
 
@@ -117,7 +125,7 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
 @code {
-  
+
     private string currentPath = "";
 
     private bool isActive(string Path)
@@ -125,4 +133,6 @@
         currentPath = navigationManager.ToBaseRelativePath(navigationManager.Uri).ToLower();
         return currentPath.StartsWith(Path.ToLower());
     }
+
+   
 }

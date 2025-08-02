@@ -61,6 +61,10 @@ namespace Parking_API.Services
             //        return new NotFoundObjectResult("The specified slot is not available or does not exist.");
             //}
 
+
+            if (bookingData.UserId == 0 || bookingData.LocationId == 0 || bookingData.SlotId == 0 || bookingData.SlotType =="")
+                return new BadRequestObjectResult("User ID, Location ID, and Slot ID are required.");
+
             DateTime startTime = (bookingData.StartTime.HasValue && bookingData.StartTime > DateTime.Now)
                 ? bookingData.StartTime.Value
                 : DateTime.Now;
