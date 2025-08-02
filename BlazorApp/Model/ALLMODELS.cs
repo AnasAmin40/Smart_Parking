@@ -1,4 +1,6 @@
-﻿namespace BlazorApp.Model
+﻿using Newtonsoft.Json;
+
+namespace BlazorApp.Model
 {
     public class LocationDTO
     {
@@ -51,9 +53,18 @@
 
 
     }
+    public class CheckBookingCount
+    {
+        public int BookingId { get; set; }
+        public string? LocationName { get; set; }
+        public string? SlotNumber { get; set; }
+        public string? SlotType { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime ExitTime { get; set; }
+    }
 
 
 
 
-   
+
 }

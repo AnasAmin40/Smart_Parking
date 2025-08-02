@@ -1,0 +1,83 @@
+﻿@page "/currentbookins"
+@using BlazorApp.Components.Layout
+@using System.Text.Json.Serialization
+@layout UserRazorLayout
+@inject IJSRuntime JS
+@inject HttpClient httpClient
+@rendermode InteractiveServer
+@using BlazorApp.Model
+
+<div class="container-fluid">
+    <div class="row">
+
+        <div class="col-md-10 ms-sm-auto px-md-4 tab-content pt-3">
+
+            <h3 class="mb-3">Current Booking Status</h3>
+            <div id="activeBookingsContainer" class="row">
+                @if (!DataLoad)
+                {
+                    <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <span class="ms-2 fs-5">Loading, please wait...</span>
+                    </div>
+                }
+                else
+                {
+                    @if (ActiveBooking.Count == 0)
+                    {
+                        <p class="text-danger"> ❌ No Active Booking found.</p>
+                    }
+                    else
+                    {
+                        foreach (var booking in ActiveBooking)
+                        {
+                            <div class="col-md-4 mb-3">
+                                <div class="card p-3" style="background-color:#f8f9fa; border-radius:7px;">
+                                    <h5 class="text-success">Booking ID: #@booking.BookingId</h5>
+                                    <p><strong>Location: </strong>@booking.LocationName</p>
+                                    <p><strong>Slot Number: </strong>@booking.SlotNumber</p>
+                                    <p><strong>Slot Type: </strong>@booking.SlotType</p>
+                                    <p><strong>Start Time: </strong>@booking.StartTime.ToString("g")</p>
+                                    <p><strong>End Time: </strong>@booking.ExitTime.ToString("g")</p>
+                                  
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private List<CheckBookingCount> ActiveBooking = new();
+    private bool DataLoad = false;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                string userid = await JS.InvokeAsync<string>("getSessionValue", "userId");
+                var Data = await httpClient.GetFromJsonAsync<ApiResponse<List<CheckBookingCount>>>($"http://localhost:5266/api/Booking/GetUserActiveBookings/{userid}");
+                ActiveBooking = Data?.Value ?? new List<CheckBookingCount>();
+                DataLoad = true;
+                StateHasChanged();
+                
+            }
+            catch (Exception ex)
+            {
+                await JS.InvokeVoidAsync("console.error", $"Error is : {ex.Message}");
+            }
+
+        }
+       
+    }
+}

@@ -5,6 +5,7 @@
 @inject HttpClient httpClient
 @inject IJSRuntime jS
 @rendermode InteractiveServer
+@inject NavigationManager navigationManager
 
 <main>
     <div class="container-fluid">
@@ -144,7 +145,7 @@
         {
             await jS.InvokeVoidAsync("console.log", $"Exception is GetUserID : {ex.Message}");
         }
-        
+
     }
 
     private async Task OnchangeTime(ChangeEventArgs e)
@@ -173,7 +174,7 @@
     private async Task OnchangeSlotType(ChangeEventArgs e)
     {
         SlotType = e.Value?.ToString();
-        
+
         if (!string.IsNullOrEmpty(SlotType))
         {
             isSlotDropdownDisabled = false;
@@ -208,7 +209,7 @@
             return;
         }
         var data = await httpClient.GetFromJsonAsync<List<SlotAvailabilityDto>>($"http://localhost:5266/api/Booking/IsAvailableSlot?LocationId={LocationId}&StartTime={StartTime}&EndTime={EndTime}&Slottype={SlotType}");
-        
+
         if(data != null)
         {
             slotAvailabilityDtos = data.Where(s => s.IsAvailable == true).ToList();
@@ -217,7 +218,7 @@
         {
             await jS.InvokeVoidAsync("console.error", "No data returned from API");
         }
-        
+
     }
 
 
@@ -239,11 +240,11 @@
             UserId = UserId
         };
 
-        
+
         var response = await httpClient.PostAsJsonAsync("http://localhost:5266/api/Booking/CreateBooking", AllData);
         if (response.IsSuccessStatusCode)
         {
-            await jS.InvokeVoidAsync("alert", "Booking Created Successfully");
+            navigationManager.NavigateTo("/upcomingbookins");
         }
        
     }

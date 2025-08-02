@@ -30,26 +30,7 @@ else if (AllSlots == null || !AllSlots.Any())
 
 else
 {
-@*     <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Slot Number</th>
-                <th>Type</th>
-                <th>Price/Hour</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var slot in Availability)
-            {
-                <tr>
-                    <td>@slot.SlotId</td>
-                    <td>@slot.SlotNumber</td>
-                    <td>@slot.IsAvailable</td>
-                </tr>
-            }
-        </tbody>
-    </table>
- *@    <div class="row">
+  <div class="row">
         @foreach(var slot in AllSlots)
         {
             var slotAvailability = Availability.FirstOrDefault(s => s.SlotId == slot.SlotId);

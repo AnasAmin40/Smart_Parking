@@ -1,12 +1,13 @@
-using System;
-using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Parking_API.Data;
 using Parking_API.Interface;
 using Parking_API.Model;
+using Parking_API.Model.Selection;
 using Parking_API.Model.Update;
+using System;
+using System.Runtime.InteropServices;
 
 namespace Parking_API.Services
 {
@@ -289,14 +290,14 @@ namespace Parking_API.Services
                 .Include(a => a.ParkingLocation)
                 .Include(a => a.ParkingSlot)
                 .Where(x => x.UserId == userId && x.Status == "Active")
-                .Select(s => new
+                .Select(s => new SelectActiveOrUpdateBooking
                 {
                     BookingId = s.BookingId,
                     LocationName = s.ParkingLocation.Name,
                     SlotNumber = s.ParkingSlot.SlotNumber,
                     SlotType = s.ParkingSlot.SlotType,
                     StartTime = s.StartTime,
-                    ExitTime = s.ExitTime
+                    ExitTime = (DateTime)s.ExitTime
                 })
                 .ToListAsync();
 
@@ -309,14 +310,14 @@ namespace Parking_API.Services
                 .Include(a => a.ParkingLocation)
                 .Include(a => a.ParkingSlot)
                 .Where(x => x.UserId == userId && x.Status == "Upcoming")
-                .Select(s => new
+                .Select(s => new SelectActiveOrUpdateBooking
                 {
                     BookingId = s.BookingId,
                     LocationName = s.ParkingLocation.Name,
                     SlotNumber = s.ParkingSlot.SlotNumber,
                     SlotType = s.ParkingSlot.SlotType,
                     StartTime = s.StartTime,
-                    ExitTime = s.ExitTime
+                    ExitTime = (DateTime)s.ExitTime
                 })
                 .ToListAsync();
 
