@@ -19,7 +19,7 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a href="/" class="nav-link  aria-current="page">Home</a>
+                            <a href="/" class="nav-link aria-current="page">Home</a>
                         </li>
 
 
@@ -51,35 +51,40 @@
             <nav class="col-md-2 d-none d-md-block sidebar">
                 <div class="sidebar-sticky pt-3">
                     <ul class="nav flex-column">
-                        
+
                         <li class="nav-item">
-                            <a href="/userDashboard" class="nav-link d-flex align-items-center @(isActive("userDashboard") ? "active" : "")">
-                                <i class="bi bi-speedometer2 me-2"></i> User Dashboard
+                            <a href="/admindashboard" class="nav-link d-flex align-items-center @(isActive("admindashboard") ? "active" : "")">
+                                <i class="bi bi-speedometer2 me-2"></i> Admin Dashboard
                             </a>
                         </li>
 
 
                         <li class="nav-item">
                             <a href="/bookslot" class="nav-link d-flex align-items-center @(isActive("bookslot") ? "active" : "")">
-                                <i class="bi bi-journal-check me-2"></i> Book Slot
+                                <i class="bi bi-journal-check me-2"></i> Parking Location
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a href="/currentbookins"  class="nav-link d-flex align-items-center @(isActive("currentbookins") ? "active" : "")">
-                                <i class="bi bi-people me-2"></i> Current Booking
+                            <a href="/currentbookins" class="nav-link d-flex align-items-center @(isActive("currentbookins") ? "active" : "")">
+                                <i class="bi bi-people me-2"></i> Bookings
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a href="/upcomingbookins"  class="nav-link d-flex align-items-center @(isActive("upcomingbookins") ? "active" : "")">
-                                <i class="bi bi-people me-2"></i> Upcoming Booking
+                            <a href="/upcomingbookins" class="nav-link d-flex align-items-center @(isActive("upcomingbookins") ? "active" : "")">
+                                <i class="bi bi-people me-2"></i> Billing
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a href="/bookinghistroty" class="nav-link d-flex align-items-center @(isActive("bookinghistroty") ? "active" : "")">
-                                <i class="bi bi-clock-history me-2"></i> Booking History
+                                <i class="bi bi-clock-history me-2"></i> Users
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/bookinghistroty" class="nav-link d-flex align-items-center @(isActive("bookinghistroty") ? "active" : "")">
+                                <i class="bi bi-clock-history me-2"></i> Roles
                             </a>
                         </li>
 
@@ -93,9 +98,9 @@
                     </ul>
                 </div>
             </nav>
-            <div >
+            <div>
                 <div role="main" class="pb-3">
-                    <ErrorBoundary >
+                    <ErrorBoundary>
                         <ChildContent>
                             @Body
                         </ChildContent>
@@ -103,7 +108,7 @@
                             An Error Occurred.
                         </ErrorContent>
                     </ErrorBoundary>
-                    
+
                 </div>
             </div>
 
@@ -134,5 +139,5 @@
         return currentPath.StartsWith(Path.ToLower());
     }
 
-   
+
 }

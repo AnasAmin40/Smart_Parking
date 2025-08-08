@@ -75,6 +75,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		var getTotalLocation = await httpClient.GetFromJsonAsync<CountResponse>("http://localhost:5266/api/Location/CountLocation");
+		// var getTotalLocation = await httpClient.GetFromJsonAsync<CountResponse>("http://localhost:5266/api/Booking/TodayIncome");
 		if (getTotalLocation != null)
 		{
 			TotalLocations = getTotalLocation.Value ;
@@ -94,7 +95,7 @@
 		UserId = await jS.InvokeAsync<string>("getSessionValue", "userId");
 		await jS.InvokeVoidAsync("console.log", $"User Id : {UserId}");
 		var getTotalActiveBooking = await httpClient.GetFromJsonAsync<CountResponse>($"http://localhost:5266/api/Booking/ActiveBookingCounter/{UserId}");
-		await jS.InvokeVoidAsync("console.log", $"getTotalActiveBooking  : {getTotalActiveBooking}");
+		
 		if (getTotalActiveBooking != null)
 		{
 			TotalActiveBookings = getTotalActiveBooking.Value;
@@ -102,7 +103,7 @@
 
 
 		var getTotalUpcomingBooking = await httpClient.GetFromJsonAsync<CountResponse>($"http://localhost:5266/api/Booking/UpcomingBookingCounter/{UserId}");
-		await jS.InvokeVoidAsync("console.log", $"getTotalUpcomingBooking  : {getTotalUpcomingBooking}");
+
 		if (getTotalUpcomingBooking != null)
 		{
 			TotalUpcomingBookings = getTotalUpcomingBooking.Value;

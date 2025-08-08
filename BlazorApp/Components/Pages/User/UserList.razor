@@ -1,0 +1,163 @@
+﻿@page "/userlist"
+@using BlazorApp.Components.Layout
+@using BlazorApp.Model
+@inject HttpClient httpClient
+@inject IJSRuntime JS
+@rendermode InteractiveServer
+@layout AdminRazorLayout
+@using Radzen
+@using Radzen.Blazor
+
+<main>
+    <div class="container-fluid">
+        <div class="row">
+
+
+            <div class="col-md-10 ms-sm-auto px-md-4 tab-content pt-3">
+
+                <div class="tab-pane fade show active" id="book-slot" role="tabpanel">
+                    <h3>UserList</h3>
+                    <input placeholder="Search..." @bind="searchTerm" @bind:event="oninput" class="form-control mb-3" />
+                    @if (!dataload)
+                    {
+                        <h2>Loading</h2>
+                    }
+                    else
+                    {
+                        <RadzenDataGrid TItem="Users" Data="@filteredUserList" AllowPaging="true" AllowSorting="true" AllowFiltering="true" PageSize="5" RowExpand="@OnRowExpand">
+                            <Columns>
+                                <RadzenDataGridColumn TItem="Users" Property="Id" Title="ID" />
+                                <RadzenDataGridColumn TItem="Users" Property="Name" Title="Name" />
+                                <RadzenDataGridColumn TItem="Users" Property="Email" Title="Email" />
+                                <RadzenDataGridColumn TItem="Users" Property="MobileNumber" Title="Mobile Number" />
+                                <RadzenDataGridColumn TItem="Users" Property="Password" Title="Password" />
+                                <RadzenDataGridColumn TItem="Users" Property="ConfirmPassword" Title="ConfirmPassword" />
+                                <RadzenDataGridColumn TItem="Users" Property="RoleId" Title="RoleId" />
+
+
+                            </Columns>
+
+                            <Template Context="user">
+                                <div class="card shadow-sm mb-3" style="max-width: 500px;">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0 d-flex align-items-center">
+                                            <i class="bi bi-person-badge me-2"></i> User Details
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <dl class="row mb-0">
+                                            <dt class="col-sm-4 text-truncate fw-semibold">
+                                                <i class="bi bi-telephone-fill me-1 text-info"></i> Mobile:
+                                            </dt>
+                                            <dd class="col-sm-8">@user.MobileNumber </dd>
+
+                                            <dt class="col-sm-4 text-truncate fw-semibold">
+                                                <i class="bi bi-key-fill me-1 text-warning"></i> Password:
+                                            </dt>
+                                            <dd class="col-sm-8 text-break">
+                                                @* Ideally, mask or hide actual password for security *@
+                                                <code>@(string.IsNullOrEmpty(user.Password) ? "<em>Hidden</em>" : new string('*', user.Password.Length))</code>
+                                            </dd>
+
+                                            <dt class="col-sm-4 text-truncate fw-semibold">
+                                                <i class="bi bi-person-check-fill me-1 text-success"></i> RoleId:
+                                            </dt>
+                                            <dd class="col-sm-8">@user.RoleId</dd>
+
+                                            <dt class="col-sm-4 text-truncate fw-semibold">
+                                                <i class="bi bi-toggle-on me-1" style="color: green;"></i> Active:
+                                            </dt>
+                                            <dd class="col-sm-8">
+                                                @if (user.Active)
+                                                {
+                                                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i> Yes</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i> No</span>
+                                                }
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </Template>
+
+                        </RadzenDataGrid>
+                    }
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+</main>
+
+
+@code {
+    
+
+
+    public class Users
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public string? Email { get; set; }
+        public string? MobileNumber { get; set; }
+        public string? Password { get; set; }
+        public string? ConfirmPassword { get; set; }
+        public bool Active { get; set; }
+        public int RoleId { get; set; }
+    }
+
+
+    private List<Users> userList = new List<Users>();
+    private bool dataload = false;
+
+    private string searchTerm = "";
+    private IEnumerable<Users> filteredUserList => userList.Where(u =>
+    string.IsNullOrWhiteSpace(searchTerm) ||
+    (u.Name?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+    (u.Email?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+    (u.MobileNumber?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+    (u.RoleId.ToString().Contains(searchTerm)) ||
+    (u.Id.ToString().Contains(searchTerm))
+);
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var data = await httpClient.GetFromJsonAsync<ApiResponse<List<Users>>>("http://localhost:5266/api/Users");
+        userList = data?.Value ?? new List<Users>();
+
+        dataload = true;
+        StateHasChanged();
+    }
+
+    private void OnRowExpand(object item)
+    {
+        var user = item as Users;
+        if (user != null)
+        {
+            Console.WriteLine($"Expanded User ID: {user.Id}");
+        }
+    }
+
+
+
+
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+    //         var data = await httpClient.GetFromJsonAsync<ApiResponse<List<Users>>>("http://localhost:5266/api/Users");
+    //         userList = data?.Value ?? new List<Users>();
+    //         await JS.InvokeVoidAsync("console.log", userList);
+    //         dataload = true;
+    //         StateHasChanged();
+    //     }
+    // }
+}

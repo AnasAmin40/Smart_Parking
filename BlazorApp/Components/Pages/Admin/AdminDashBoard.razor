@@ -1,0 +1,109 @@
+﻿@using BlazorApp.Components.Layout
+@using BlazorApp.Model
+@rendermode InteractiveServer
+@layout AdminRazorLayout
+@page "/admindashboard"
+@inject HttpClient httpClient
+@inject IJSRuntime JS
+
+
+<div class="container-fluid">
+    <div class="row">
+
+        <main class="col-md-10 ms-sm-auto px-md-4 tab-content pt-3">
+            <div class="tab-pane fade show active">
+                <h2>Admin Dashboard Overview</h2>
+
+                <section class="features-section row text-center mb-5">
+                    <div class="col-md-3">
+                        <div class="card p-3 text-center shadow feature-card">
+                            <div class="feature-icon mb-2 mx-auto">
+                                <i class="bi bi-graph-up-arrow fs-1 text-success"></i>
+                            </div>
+                            <div class="feature-value fw-bold display-6">@TodayIncome</div>
+                            <div class="feature-label text-muted">
+                                Today Revenue
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card p-3 text-center shadow feature-card">
+                            <div class="feature-icon mb-2 mx-auto">
+                                <i class="fa-solid fa-car fs-1 text-success"></i>
+                            </div>
+                            <div class="feature-value fw-bold display-6">@CarEntries</div>
+                            <div class="feature-label text-muted">
+                                Today Cars Entries
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card p-3 text-center shadow feature-card">
+                            <div class="feature-icon mb-2 mx-auto">
+                                <i class="bi bi-bicycle  text-success" style="font-size:40px;"></i>
+
+                            </div>
+                            <div class="feature-value fw-bold display-6">@BikeEntries</div>
+                            <div class="feature-label text-muted">Today Bikes Entries</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card p-3 text-center shadow feature-card">
+                            <div class="feature-icon mb-2 mx-auto">
+                                <!-- <i class="bi bi-car-front-fill fs-1 "></i> -->
+                                <i class="fa-solid fa-car-side fs-1 text-success"></i>
+                            </div>
+                            <div class="feature-value fw-bold display-6">@ActiveBookings</div>
+                            <div class="feature-label text-muted">Active Bookings</div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+@code {
+    private int TodayIncome { get; set; } = 0;
+    private int CarEntries { get; set; } = 0;
+    private int BikeEntries { get; set; } = 0;
+    private int ActiveBookings { get; set; } = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        CarEntries = await httpClient.GetFromJsonAsync<int>("http://localhost:5266/api/Booking/CountTodayEntriesCar");
+        BikeEntries = await httpClient.GetFromJsonAsync<int>("http://localhost:5266/api/Booking/CountTodayEntriesBike");
+        ActiveBookings = await httpClient.GetFromJsonAsync<int>("http://localhost:5266/api/Booking/AllActiveBooking");
+
+
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var getTodayIncome = await httpClient.GetFromJsonAsync<CountResponseWrapper>("http://localhost:5266/api/Booking/TodayIncome");
+                if (getTodayIncome != null)
+                {
+                    TodayIncome = (int)getTodayIncome.Value;
+                    StateHasChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                await JS.InvokeVoidAsync("console.error", $"Error is : {ex.Message}");
+            }
+
+        }
+
+    }
+
+
+}
