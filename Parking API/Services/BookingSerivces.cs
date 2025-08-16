@@ -324,6 +324,27 @@ namespace Parking_API.Services
             return new OkObjectResult(upcoming);
         }
 
+        public async Task<IActionResult> GetAllUpcomingBooking()
+        {
+            var upcoming = await _db.BookingTable
+                .Include(a => a.ParkingLocation)
+                .Include(a => a.ParkingSlot)
+                .Where(x => x.Status == "Upcoming")
+                .Select(s => new SelectActiveOrUpdateBooking
+                {
+                    BookingId = s.BookingId,
+                    LocationName = s.ParkingLocation.Name,
+                    SlotNumber = s.ParkingSlot.SlotNumber,
+                    SlotType = s.ParkingSlot.SlotType,
+                    StartTime = s.StartTime,
+                    ExitTime = (DateTime)s.ExitTime
+                })
+                .ToListAsync();
+
+            return new OkObjectResult(upcoming);
+        }
+
+
 
 
         public async Task<IActionResult> BookingHistory(int userId)
@@ -368,7 +389,6 @@ namespace Parking_API.Services
                 .Where(b => b.UserId == userid && b.Status == "Upcoming")
                 .CountAsync();
 
-
             return new OkObjectResult(upcomingBookingCount);
         }
 
@@ -412,6 +432,8 @@ namespace Parking_API.Services
 
             return new OkObjectResult(totalIncome);
         }
+
+        
 
         public Task<IActionResult> IncreaseOneHour(int bookingId)
         {
@@ -458,5 +480,30 @@ namespace Parking_API.Services
             return result;
         }
 
+        public async Task<int> UpcomingCounter(string Type)
+        {
+            int CarUpcoming = await _db.BookingTable.Where(b => b.Status == "Upcoming" && b.ParkingSlot.SlotType == Type && b.IsPaid == false).CountAsync();
+            return CarUpcoming;
+        }
+
+        public async Task<IActionResult> UpcomingBookingByType(String Type)
+        {
+            var upcoming = await _db.BookingTable
+                .Include(a => a.ParkingLocation)
+                .Include(a => a.ParkingSlot)
+                .Where(x => x.Status == "Upcoming" && x.ParkingSlot.SlotType==Type)
+                .Select(s => new SelectActiveOrUpdateBooking
+                {
+                    BookingId = s.BookingId,
+                    LocationName = s.ParkingLocation.Name,
+                    SlotNumber = s.ParkingSlot.SlotNumber,
+                    SlotType = s.ParkingSlot.SlotType,
+                    StartTime = s.StartTime,
+                    ExitTime = (DateTime)s.ExitTime
+                })
+                .ToListAsync();
+
+            return new OkObjectResult(upcoming);
+        }
     }
 }

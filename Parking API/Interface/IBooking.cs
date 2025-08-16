@@ -29,5 +29,7 @@ namespace Parking_API.Interface
         Task<List<SlotAvailabilityDto>> SlotIsAvailable(int LocationId, DateTime StartTime, DateTime EndTime, string Slottype);
         Task<IActionResult> CancelledBooking(int bookingId);
         Task<IActionResult> PaidBooking(int bookingId);
+        Task<int> UpcomingCounter(string Type);
+        Task<IActionResult> UpcomingBookingByType(String Type);
     }
 }

@@ -1,5 +1,125 @@
-﻿<h3>BookingList</h3>
+﻿@page "/bookinglist"
+@using BlazorApp.Components.Layout
+@using BlazorApp.Model
+@using Radzen
+@layout AdminRazorLayout
+@inject HttpClient httpClient
+@inject IJSRuntime JS
+@rendermode InteractiveServer
+
+<div class="container-fluid">
+    <div class="row">
+
+        <main class="col-md-10 ms-sm-auto px-md-4 tab-content pt-3">
+            <div class="tab-pane fade show active">
+                <h2>BookingList</h2>
+
+                @if (!DataLoad)
+                {
+                    <div class="d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <span class="ms-2 fs-5">Loading, please wait...</span>
+                    </div>
+                }
+                else
+                {
+                    <RadzenDataGrid TItem="Booking" Data="BookingHistoryList" AllowPaging="true" AllowFiltering="true" PageSize="10" AllowSorting="true">
+                        <Columns>
+                            <RadzenDataGridColumn TItem="Booking" Property="BookingId" Title="Id" Width="70px" SortOrder="SortOrder.Descending" />
+
+                            <RadzenDataGridColumn TItem="Booking" Title="User" Width="100px">
+                                <Template Context="D">
+                                    @D.User?.Name
+                                </Template>
+                            </RadzenDataGridColumn>
+
+                            <RadzenDataGridColumn TItem="Booking" Title="Location">
+                                <Template Context="D">
+                                    @D.ParkingLocation?.Name
+                                </Template>
+                            </RadzenDataGridColumn>
+
+                            <RadzenDataGridColumn TItem="Booking" Title="Number" Width="100px">
+                                <Template Context="D">
+                                    @D.ParkingSlot?.SlotNumber
+                                </Template>
+                            </RadzenDataGridColumn>
+
+                            <RadzenDataGridColumn TItem="Booking" Title="Type" Width="100px">
+                                <Template Context="D">
+                                    @D.ParkingSlot?.SlotType
+                                </Template>
+                            </RadzenDataGridColumn>
+
+                            <RadzenDataGridColumn TItem="Booking" Property="DurationHours" Title="Hour" Width="100px" />
+                            <RadzenDataGridColumn TItem="Booking" Property="StartTime" Title="StartTime" />
+                            <RadzenDataGridColumn TItem="Booking" Property="ExitTime" Title="ExitTime" />
+                            <RadzenDataGridColumn TItem="Booking" Title="IsPaid" Width="100px">
+                                <Template Context="D">
+                                    @{
+                                        if (D.IsPaid)
+                                        {
+                                            <text>Paid</text>
+                                            // <span class="badge bg-success">Paid</span>
+                                        }
+                                        else
+                                        {
+                                            // <span class="badge bg-danger">Not Paid</span>
+                                            <text>Not Paid</text>
+                                        }
+                                    }
+                                </Template>
+                            </RadzenDataGridColumn>
+
+                            <RadzenDataGridColumn TItem="Booking" Property="Status" Title="Status" Width="100px" />
+
+                        </Columns>
+                        
+                    </RadzenDataGrid>
+                }
+
+
+               </div>
+        </main>
+    </div>
+</div>
+
 
 @code {
+    private List<Booking> BookingHistoryList = new();
+    private bool DataLoad = false;
 
+    protected override async Task OnInitializedAsync()
+    {
+        
+        var data = await httpClient.GetFromJsonAsync<ApiResponse<List<Booking>>>("http://localhost:5266/api/Booking/AllBooking");
+
+        if (data != null)
+        {
+            BookingHistoryList = data.Value;
+            DataLoad = true;
+            StateHasChanged();
+        }
+    }
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+    //         string id = await JS.InvokeAsync<string>("getSessionValue", "userId");
+    //         var data = await httpClient.GetFromJsonAsync<ApiResponse<List<Booking>>>("http://localhost:5266/api/Booking/AllBooking");
+
+    //         if (data != null)
+    //         {
+    //             BookingHistoryList = data.Value;
+    //             DataLoad = true;
+    //             StateHasChanged();
+    //         }
+    //         StateHasChanged();
+    //         await JS.InvokeVoidAsync("console.log", BookingHistoryList);
+    //     }
+
+    // }
 }

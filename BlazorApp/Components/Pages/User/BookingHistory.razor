@@ -29,10 +29,14 @@
                     }
                     else
                     {
-                      <RadzenDataGrid TItem="Booking" Data="BookingHistoryList" AllowFiltering="true" AllowPaging="true" AllowSorting="true" PageSize="8">
-                          <Columns>
+                        <RadzenDataGrid TItem="Booking" Data="BookingHistoryList" AllowFiltering="true" AllowPaging="true" AllowSorting="true" PageSize="8">
+                            <Columns>
                                 <RadzenDataGridColumn TItem="Booking" Property="BookingId" Title="ID" Width="70px" />
-                                <RadzenDataGridColumn TItem="Booking" Title="Location" ><Template Context="D"> @D.ParkingLocation?.Name</Template></RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="Booking" Title="Location">
+                                    <Template Context="D">
+                                        @D.ParkingLocation?.Name
+                                    </Template>
+                                </RadzenDataGridColumn>
 
                                 <RadzenDataGridColumn TItem="Booking" Title="Number" Width="120px"><Template Context="D"> @D.ParkingSlot?.SlotNumber</Template></RadzenDataGridColumn>
 
@@ -41,11 +45,11 @@
                                 <RadzenDataGridColumn TItem="Booking" Property="StartTime" Title="StartTime" />
                                 <RadzenDataGridColumn TItem="Booking" Property="ExitTime" Title="EndTime" />
                                 <RadzenDataGridColumn TItem="Booking" Property="Status" Title="Status" Width="150px" />
-                          </Columns>
-                      </RadzenDataGrid>
-                      
+                            </Columns>
+                        </RadzenDataGrid>
+
                     }
-                   
+
                 </div>
             </div>
         </div>
@@ -77,7 +81,7 @@
 
             await JS.InvokeVoidAsync("console.log", BookingHistoryList);
         }
-        
+
     }
 
 }

@@ -1,0 +1,107 @@
+﻿@page "/billinglist"
+@using BlazorApp.Components.Layout
+@using BlazorApp.Model
+@using Radzen
+@layout AdminRazorLayout
+@inject HttpClient httpClient
+@inject IJSRuntime JS
+@rendermode InteractiveServer
+
+<div class="container-fluid">
+    <div class="row">
+
+        <main class="col-md-10 ms-sm-auto px-md-4 tab-content pt-3">
+            <div class="tab-pane fade show active">
+                <h2>BillingList</h2>
+
+                @if (!DataLoad)
+                {
+                    <div class="d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <span class="ms-2 fs-5">Loading, please wait...</span>
+                    </div>
+                }
+                else
+                {
+                    <RadzenDataGrid TItem="Billing" Data="BillingHistory" AllowPaging="true" AllowFiltering="true" PageSize="10" AllowSorting="true">
+                        <Columns>
+                            <RadzenDataGridColumn TItem="Billing" Property="BillId" Title="BillId" SortOrder="SortOrder.Descending" />
+
+                            <RadzenDataGridColumn TItem="Billing" Property="BookingId" Title="BookingId" />
+                               
+
+                            <RadzenDataGridColumn TItem="Billing" Title="User">
+                                <Template Context="D">
+                                    @D.User?.Name
+                                </Template>
+                            </RadzenDataGridColumn>
+
+                            <RadzenDataGridColumn TItem="Billing" Title="Location" >
+                                <Template Context="D">
+                                    @D.ParkingLocation?.Name
+                                </Template>
+                            </RadzenDataGridColumn>
+
+                            <RadzenDataGridColumn TItem="Billing" Title="Number" Width="100px">
+                                <Template Context="D">
+                                    @D.ParkingSlot?.SlotNumber
+                                </Template>
+                            </RadzenDataGridColumn>
+
+                            <RadzenDataGridColumn TItem="Billing" Title="Type" Width="100px">
+                                <Template Context="D">
+                                    @D.ParkingSlot?.SlotType
+                                </Template>
+                            </RadzenDataGridColumn>
+
+                            <RadzenDataGridColumn TItem="Billing" Title="Hour" Width="100px">
+                                <Template Context="D">
+                                    @if(D.DurationInHours > 1)
+                                    {
+                                       <text>@D.DurationInHours Hours</text>
+                                    }
+                                    else
+                                    {
+                                        <text>@D.DurationInHours Hour</text>
+                                    }
+                                   
+                                </Template>
+                            </RadzenDataGridColumn>
+
+
+
+                            <RadzenDataGridColumn TItem="Billing" Property="CreatedAt" Title="CreatedAt" Width="100px" />
+
+                        </Columns>
+
+                    </RadzenDataGrid>
+                }
+
+
+            </div>
+        </main>
+    </div>
+</div>
+
+
+@code {
+    private List<Billing> BillingHistory = new();
+    private bool DataLoad = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var data = await httpClient.GetFromJsonAsync<ApiResponse<List<Billing>>>("http://localhost:5266/api/Booking/GetBillList");
+
+        if (data != null)
+        {
+            BillingHistory = data.Value;
+            DataLoad = true;
+            StateHasChanged();
+        }
+    }
+
+
+}

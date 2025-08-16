@@ -1,0 +1,184 @@
+﻿@page "/bookingmanager"
+@using BlazorApp.Components.Layout
+@using BlazorApp.Model
+@using Radzen
+@layout AdminRazorLayout
+@inject HttpClient httpClient
+@inject IJSRuntime JS
+@rendermode InteractiveServer
+
+
+<div class="container-fluid">
+    <div class="row">
+
+        <div class="col-md-10 ms-sm-auto px-md-4 tab-content pt-3">
+            <div class="tab-pane fade show active">
+                <h2>BookingManager</h2>
+                  <div class="mt-3 d-flex gap-3 justify-content-between mb-3">
+                    <button type="button" class="btn btn-primary btn-lg flex-fill mx-1 position-relative" @onclick="() => CarZero()">
+                        Car
+                        @if (CarCount != 0)
+                        {
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                @CarCount
+                                <span class="visually-hidden">unread messages</span>
+                            </span>
+                        }
+                        
+                    </button>
+
+
+                    <button type="button" class="btn btn-primary btn-lg flex-fill mx-1 position-relative" @onclick="() => BikeZero()">
+                        Bike
+                        @if (BikeCount != 0)
+                        {
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                @BikeCount
+                                <span class="visually-hidden">unread messages</span>
+                            </span>
+                        }
+                    </button>
+
+                    <button type="button" class="btn btn-primary btn-lg flex-fill mx-1 position-relative" @onclick="() => BusZero()">
+                        Bus
+                        @if (BusCount != 0)
+                        {
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                @BusCount
+                                <span class="visually-hidden">unread messages</span>
+                            </span>
+                        }
+                    </button>
+
+
+                   
+
+                    
+
+                    <button type="button" class="btn btn-primary btn-lg flex-fill mx-1 position-relative" @onclick="() => Vip_carZero()">
+                        VIP_Car
+                        @if (Vip_carCount != 0)
+                        {
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                @Vip_carCount
+                                <span class="visually-hidden">unread messages</span>
+                            </span>
+                        }
+                    </button>
+
+                    
+                </div>
+                <div class="row row-cols-1 row-cols-md-4 g-4">
+                    @foreach (var b in UpcomingBookings)
+                    {
+                        <div class="col">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary">
+                                        Slot Number - @b.SlotNumber
+                                    </h5>
+                                    <p class="card-text mb-1">
+                                        <strong>Booking ID:</strong> @b.BookingId
+                                    </p>
+                                    <p class="card-text mb-1">
+                                        <strong>Location:</strong> @b.LocationName
+                                    </p>
+                                    <p class="card-text mb-1">
+                                        <strong>Start:</strong> @b.StartTime.ToString("g")
+                                    </p>
+                                    <p class="card-text mb-1">
+                                        <strong>Exit:</strong> @b.ExitTime.ToString("g")
+                                    </p>
+                                </div>
+                                <div class="card-footer d-flex gap-2 justify-content-between">
+                                    <button class="btn btn-sm btn-danger" @onclick="() => CancelBooking(b.BookingId)">
+                                        Cancel Booking
+                                    </button>
+                                    <button class="btn btn-sm btn-success" @onclick="() => MarkAsPaid(b.BookingId)">
+                                        Bill Received
+                                    </button>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+    int CarCount, BikeCount, BusCount, Vip_carCount;
+    private string currType = "";
+    private List<CheckBookingCount> UpcomingBookings = new List<CheckBookingCount>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        CarCount = await httpClient.GetFromJsonAsync<int>("http://localhost:5266/api/Booking/UpcomingCounter?Type=Car");
+        BikeCount = await httpClient.GetFromJsonAsync<int>("http://localhost:5266/api/Booking/UpcomingCounter?Type=Bike");
+        BusCount = await httpClient.GetFromJsonAsync<int>("http://localhost:5266/api/Booking/UpcomingCounter?Type=Bus");
+        Vip_carCount = await httpClient.GetFromJsonAsync<int>("http://localhost:5266/api/Booking/UpcomingCounter?Type=VIP_Car");
+    }
+
+    private async Task LoadData(string Type)
+    {
+        currType = Type;
+        var bookings = await httpClient.GetFromJsonAsync<ApiResponse<List<CheckBookingCount>>>($"http://localhost:5266/api/Booking/UpcomingBookingByType?Type={Type}");
+        UpcomingBookings = bookings?.Value ?? new List<CheckBookingCount>();
+        StateHasChanged();
+    }
+
+
+    private async Task MarkAsPaid(int bookingId)
+    {
+
+        await httpClient.PostAsJsonAsync($"http://localhost:5266/api/Booking/PaidBooking/{bookingId}", new { });
+        await LoadData(currType);
+        await OnInitializedAsync();
+    }
+
+    private async Task CancelBooking(int bookingId)
+    {
+        var response = await httpClient.PutAsJsonAsync($"http://localhost:5266/api/Booking/CancelledBooking/{bookingId}", bookingId);
+        await LoadData(currType);
+        await OnInitializedAsync();
+    }
+
+
+
+
+    private async Task CarZero()
+    { 
+        await LoadData("Car");
+        await JS.InvokeVoidAsync("console.log", UpcomingBookings);
+        StateHasChanged();
+    }
+
+    private async Task BikeZero()
+    { 
+        await LoadData("Bike");
+        await JS.InvokeVoidAsync("console.log", UpcomingBookings);
+        StateHasChanged();
+    }
+
+    private async Task BusZero()
+    {   
+        await LoadData("Bus");
+        await JS.InvokeVoidAsync("console.log", UpcomingBookings);
+        StateHasChanged();
+    }
+
+    private async Task Vip_carZero()
+    {
+        await LoadData("VIP_Car");
+        await JS.InvokeVoidAsync("console.log", UpcomingBookings);
+        StateHasChanged();
+    }
+
+   
+
+}

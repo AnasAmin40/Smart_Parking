@@ -225,6 +225,18 @@ namespace Parking_API.Controllers
             return Ok();
         }
 
+        [HttpGet("UpcomingCounter")]
+        public async Task<int> UpcomingCounter(string Type)
+        {
+            var upcomingCarCount = await _iBooking.UpcomingCounter(Type);
+            return upcomingCarCount;
+        }
 
+        [HttpGet("UpcomingBookingByType")]
+        public async Task<IActionResult> UpcomingBookingByType(String Type)
+        {
+            var upcomingBookings = await _iBooking.UpcomingBookingByType(Type);
+            return Ok(upcomingBookings);
+        }
     }
 }
