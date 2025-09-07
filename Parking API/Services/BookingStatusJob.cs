@@ -35,7 +35,7 @@ namespace Parking_API.Services
             foreach (var booking in upcoming)
             {
                 var time = (now - booking.StartTime).TotalMinutes;
-                if (time >= 30)
+                if (time >= 10)
                 {
                     booking.Status = "Cancelled";
                 }

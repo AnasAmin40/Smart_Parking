@@ -55,6 +55,10 @@ namespace Parking_API.Controllers
             {
                 return BadRequest(new { message = "User data cannot be null" });
             }
+            if(data.Name=="string" || data.Email == "string" || data.MobileNumber == "string")
+            {
+                return BadRequest(new { message = "User data cannot be null" });
+            }
             
             await _Iuser.AddNewUser(data);
             return Ok(new { message = "User added successfully", user = data });
@@ -64,10 +68,11 @@ namespace Parking_API.Controllers
         [HttpPost("AddNewUserByUser")]
         public async Task<IActionResult> AddNewUserByUser(Users data)
         {
-            //if (data == null)
-            //{
-            //    return BadRequest(new { message = "User data cannot be null" });
-            //}
+            
+            if (data.Name == "string" || data.Email == "string" || data.MobileNumber == "string")
+            {
+                return BadRequest(new { message = "User data cannot be null" });
+            }
             await _Iuser.AddNewUserByUser(data);
             return Ok(new { message = "User added successfully", user = data });
         }
