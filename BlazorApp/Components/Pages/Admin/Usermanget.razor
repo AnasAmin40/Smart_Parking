@@ -1,11 +1,11 @@
-﻿@page "/useranage"
+﻿@page "/usermaddnage"
 @using BlazorApp.Components.Layout
 @using BlazorApp.Model
 @using Radzen
-@using Radzen.Blazor.Rendering
 @layout AdminRazorLayout
 @inject HttpClient httpClient
 @inject IJSRuntime JS
+@inject NotificationService NotificationService
 @rendermode InteractiveServer
 
 <div class="container-fluid">
@@ -30,9 +30,7 @@
 
                     <RadzenDataGrid TItem="Users" Data="UserList" @ref="grid"
                                     AllowFiltering="true" AllowSorting="true" AllowPaging="true" PageSize="6"
-                                    EditMode="DataGridEditMode.Single"
-                                    RowCreate="@(args => AddUser(args))"
-                                    RowUpdate="@(args => UpdateUser(args))">
+                                    EditMode="DataGridEditMode.Single">
 
                         <Columns>
                             <RadzenDataGridColumn TItem="Users" Property="Id" Title="Id" />
@@ -65,19 +63,17 @@
                                 </Template>
                             </RadzenDataGridColumn>
 
-                            <RadzenDataGridColumn TItem="Users" Context="user" Title="Actions">
+                           @*  <RadzenDataGridColumn TItem="Users" Context="user" Title="Actions">
                                 <Template Context="user">
-                                    <RadzenButton Icon="edit" Click="@(args => grid.EditRow(user))"
+                                    <RadzenButton Icon="edit" Click="@(args => EditUser(user))"
                                                   Style="margin-right:5px" />
-                                    <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger"
-                                                  Click="@(args => DeleteUser(user))" Style="margin-right:5px" />
                                 </Template>
                                 <EditTemplate Context="user">
-                                    <RadzenButton Icon="save" Click="@(args => grid.UpdateRow(user))"
+                                    <RadzenButton Icon="save" Click="@(args => SaveUser(user))"
                                                   Style="margin-right:5px" />
-                                    <RadzenButton Icon="cancel" Click="@(args => grid.CancelEditRow(user))" />
+                                    <RadzenButton Icon="cancel" Click="@(args => CancelEdit(user))" />
                                 </EditTemplate>
-                            </RadzenDataGridColumn>
+                            </RadzenDataGridColumn> *@
                         </Columns>
                     </RadzenDataGrid>
                 }
@@ -91,6 +87,7 @@
     private List<Role> RoleList = new List<Role>();
     private bool dataload = false;
     RadzenDataGrid<Users> grid;
+    private Users newUser;
 
     protected override async Task OnInitializedAsync()
     {
@@ -124,7 +121,7 @@
 
     private void InsertUser()
     {
-        var newUser = new Users
+        newUser = new Users
         {
             Name = "",
             Email = "",
@@ -135,21 +132,43 @@
         grid.EditRow(newUser);
     }
 
-    private async Task AddUser(Users user)
+    private void EditUser(Users user)
+    {
+        grid.EditRow(user);
+    }
+
+    private async Task SaveUser(Users user)
     {
         try
         {
-            var response = await httpClient.PostAsJsonAsync("http://localhost:5266/api/Users/AddUser", user);
+            if (user.Id == 0) // New user
+            {
+                var response = await httpClient.PostAsJsonAsync("http://localhost:5266/api/Users", user);
 
-            if (response.IsSuccessStatusCode)
-            {
-                await LoadData(); // Refresh the data
-                grid.CancelEditRow(user);
+                if (response.IsSuccessStatusCode)
+                {
+                    await LoadData(); // Refresh the data
+                }
+                else
+                {
+                    await JS.InvokeVoidAsync("console.error", "Add failed");
+                }
             }
-            else
+            else // Existing user
             {
-                await JS.InvokeVoidAsync("console.error", "Add failed");
+                var response = await httpClient.PutAsJsonAsync($"http://localhost:5266/api/Users/{user.Id}", user);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    await LoadData(); // Refresh the data
+                }
+                else
+                {
+                    await JS.InvokeVoidAsync("console.error", "Update failed");
+                }
             }
+
+            grid.CancelEditRow(user);
         }
         catch (Exception ex)
         {
@@ -157,45 +176,12 @@
         }
     }
 
-    private async Task UpdateUser(Users user)
+    private void CancelEdit(Users user)
     {
-        try
+        if (user.Id == 0) // New user that wasn't saved
         {
-            var response = await httpClient.PutAsJsonAsync($"http://localhost:5266/api/Users/UpdateUser/{user.Id}", user);
-
-            if (response.IsSuccessStatusCode)
-            {
-                await LoadData(); // Refresh the data
-            }
-            else
-            {
-                await JS.InvokeVoidAsync("console.error", "Update failed");
-            }
+            UserList.Remove(user);
         }
-        catch (Exception ex)
-        {
-            await JS.InvokeVoidAsync("console.error", ex.Message);
-        }
-    }
-
-    private async Task DeleteUser(Users user)
-    {
-        try
-        {
-            var response = await httpClient.DeleteAsync($"http://localhost:5266/api/Users/DeleteUser/{user.Id}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                await LoadData(); // Refresh the data
-            }
-            else
-            {
-                await JS.InvokeVoidAsync("console.error", "Delete failed");
-            }
-        }
-        catch (Exception ex)
-        {
-            await JS.InvokeVoidAsync("console.error", ex.Message);
-        }
+        grid.CancelEditRow(user);
     }
 }

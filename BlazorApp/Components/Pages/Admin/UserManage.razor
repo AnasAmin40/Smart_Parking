@@ -2,10 +2,10 @@
 @using BlazorApp.Components.Layout
 @using BlazorApp.Model
 @using Radzen
-@using Radzen.Blazor.Rendering
 @layout AdminRazorLayout
 @inject HttpClient httpClient
 @inject IJSRuntime JS
+@inject NotificationService NotificationService
 @rendermode InteractiveServer
 
 <div class="container-fluid">
@@ -25,13 +25,14 @@
                 }
                 else
                 {
-                    <RadzenButton Text="Add User" Icon="add_circle" Style="margin-bottom:10px" Click="@InsertUser" />
+                  @*   <RadzenButton Text="Add User" Icon="add_circle" Style="margin-bottom:10px"
+                                  Click="@InsertUser" /> *@
 
                     <RadzenDataGrid TItem="Users" Data="UserList" @ref="grid"
                                     AllowFiltering="true" AllowSorting="true" AllowPaging="true" PageSize="6"
                                     EditMode="DataGridEditMode.Single"
-                                    RowCreate="@(args => AddUser(args))"
-                                    RowUpdate="@(args => UpdateUser(args))">
+                                    RowUpdate="@OnUpdateUser"
+                                 >
 
                         <Columns>
                             <RadzenDataGridColumn TItem="Users" Property="Id" Title="Id" />
@@ -60,15 +61,26 @@
                                                     TextProperty="Roles" ValueProperty="RoleId" Style="width:100%" />
                                 </EditTemplate>
                                 <Template Context="user">
-                                    @(GetRoleName(user.RoleId))
+                                    @{
+                                        var role = RoleList.FirstOrDefault(r => r.RoleId == user.RoleId);
+                                        @role?.Roles
+                                    }
                                 </Template>
                             </RadzenDataGridColumn>
 
-                            <RadzenDataGridColumn TItem="Users" Context="user" Title="Actions">
+                            <RadzenDataGridColumn TItem="Users" Title="Actions" Width="120px" Filterable="false" Sortable="false">
                                 <Template Context="user">
                                     <RadzenButton Icon="edit" Click="@(args => grid.EditRow(user))" Style="margin-right:5px" />
-                                    <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="@(args => DeleteUser(user))" />
+
                                 </Template>
+                                <EditTemplate Context="user">
+                                    <div class="d-flex">
+                                        <RadzenButton Icon="save" Click="@(args => grid.UpdateRow(user))" Style="margin-right:5px" />
+                                      
+
+
+                                    </div>
+                                </EditTemplate>
                             </RadzenDataGridColumn>
                         </Columns>
                     </RadzenDataGrid>
@@ -83,45 +95,29 @@
     private List<Role> RoleList = new List<Role>();
     private bool dataload = false;
     private RadzenDataGrid<Users> grid;
-
-    // Add this class if you don't have it
-    public class ApiResponse<T>
-    {
-        public T? Value { get; set; }
-        public bool Success { get; set; }
-        public string? Message { get; set; }
-    }
+    private Users newUser;
+    private Users userToEdit;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadData();
     }
 
-    private string GetRoleName(int? roleId)
-    {
-        if (roleId == null) return "Unknown";
-        var role = RoleList.FirstOrDefault(r => r.RoleId == roleId);
-        return role?.Roles ?? "Unknown";
-    }
-
     private async Task LoadData()
     {
         try
         {
-            // Load users
-            var userResponse = await httpClient.GetAsync("http://localhost:5266/api/Users");
-            if (userResponse.IsSuccessStatusCode)
+            var userdata = await httpClient.GetFromJsonAsync<ApiResponse<List<Users>>>("http://localhost:5266/api/Users");
+            var Roledata = await httpClient.GetFromJsonAsync<ApiResponse<List<Role>>>("http://localhost:5266/api/Role");
+
+            if (userdata != null && userdata.Value != null)
             {
-                var userData = await userResponse.Content.ReadFromJsonAsync<ApiResponse<List<Users>>>();
-                UserList = userData?.Value ?? new List<Users>();
+                UserList = userdata.Value;
             }
 
-            // Load roles
-            var roleResponse = await httpClient.GetAsync("http://localhost:5266/api/Role");
-            if (roleResponse.IsSuccessStatusCode)
+            if (Roledata != null && Roledata.Value != null)
             {
-                var roleData = await roleResponse.Content.ReadFromJsonAsync<ApiResponse<List<Role>>>();
-                RoleList = roleData?.Value ?? new List<Role>();
+                RoleList = Roledata.Value;
             }
 
             dataload = true;
@@ -129,96 +125,72 @@
         }
         catch (Exception ex)
         {
-            await JS.InvokeVoidAsync("console.error", "LoadData Error:", ex.Message);
+            await JS.InvokeVoidAsync("console.error", ex.Message);
+            NotificationService.Notify(NotificationSeverity.Error, "Error", "Failed to load data");
         }
     }
 
-    private void InsertUser()
-    {
-        var newUser = new Users
-        {
-            Name = "",
-            Email = "",
-            MobileNumber = "",
-            RoleId = RoleList.FirstOrDefault()?.RoleId ?? 1
-        };
-        UserList.Insert(0, newUser);
-        grid.EditRow(newUser);
-        StateHasChanged();
-    }
+    // private void InsertUser()
+    // {
+    //     newUser = new Users
+    //     {
+    //         Id = 0,
+    //         Name = "",
+    //         Email = "",
+    //         MobileNumber = "",
+    //         RoleId = RoleList.FirstOrDefault()?.RoleId ?? 1
+    //     };
 
-    private async Task AddUser(Users user)
-    {
-        try
-        {
-            var response = await httpClient.PostAsJsonAsync("http://localhost:5266/api/Users/AddUser", user);
-            
-            if (response.IsSuccessStatusCode)
-            {
-                await LoadData();
-                await JS.InvokeVoidAsync("alert", "User added successfully!");
-            }
-            else
-            {
-                var error = await response.Content.ReadAsStringAsync();
-                await JS.InvokeVoidAsync("alert", $"Failed to add user: {error}");
-            }
-        }
-        catch (Exception ex)
-        {
-            await JS.InvokeVoidAsync("console.error", "AddUser Error:", ex.Message);
-            await JS.InvokeVoidAsync("alert", "Error adding user");
-        }
-    }
+    //     // Cancel any current edit operation first
+    //     if (userToEdit != null)
+    //     {
+    //         grid.CancelEditRow(userToEdit);
+    //     }
 
-    private async Task UpdateUser(Users user)
+    //     UserList.Insert(0, newUser);
+    //     grid.EditRow(newUser);
+    //     userToEdit = newUser;
+    // }
+
+    private void EditUser(Users user)
     {
         try
         {
-            var response = await httpClient.PutAsJsonAsync($"http://localhost:5266/api/Users/UpdateUser/{user.Id}", user);
-            
-            if (response.IsSuccessStatusCode)
+            if (grid == null) return;
+
+            if (userToEdit != null && userToEdit != user)
             {
-                await LoadData();
-                await JS.InvokeVoidAsync("alert", "User updated successfully!");
+                grid.CancelEditRow(userToEdit);
             }
-            else
-            {
-                var error = await response.Content.ReadAsStringAsync();
-                await JS.InvokeVoidAsync("alert", $"Failed to update user: {error}");
-            }
+
+            grid.EditRow(user);
+            userToEdit = user;
         }
         catch (Exception ex)
         {
-            await JS.InvokeVoidAsync("console.error", "UpdateUser Error:", ex.Message);
-            await JS.InvokeVoidAsync("alert", "Error updating user");
+            Console.WriteLine($"Error in EditUser: {ex.Message}");
+          
         }
     }
 
-    private async Task DeleteUser(Users user)
+
+
+    private async Task OnUpdateUser(Users user)
     {
-        if (await JS.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {user.Name}?"))
+        await JS.InvokeVoidAsync("console.log", user);
+        var response = await httpClient.PutAsJsonAsync($"http://localhost:5266/api/Users/UpdateUser/{user.Id}", user);
+        if (response.IsSuccessStatusCode)
         {
-            try
-            {
-                var response = await httpClient.DeleteAsync($"http://localhost:5266/api/Users/DeleteUser/{user.Id}");
-                
-                if (response.IsSuccessStatusCode)
-                {
-                    await LoadData();
-                    await JS.InvokeVoidAsync("alert", "User deleted successfully!");
-                }
-                else
-                {
-                    var error = await response.Content.ReadAsStringAsync();
-                    await JS.InvokeVoidAsync("alert", $"Failed to delete user: {error}");
-                }
-            }
-            catch (Exception ex)
-            {
-                await JS.InvokeVoidAsync("console.error", "DeleteUser Error:", ex.Message);
-                await JS.InvokeVoidAsync("alert", "Error deleting user");
-            }
+          
+            userToEdit = null;
+            await LoadData();
+        }
+        else
+        {
+            grid.CancelEditRow(user);
         }
     }
+
+   
+
 }

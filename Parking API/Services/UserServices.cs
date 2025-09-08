@@ -68,6 +68,7 @@ namespace Parking_API.Services
                 existingUser.Name = data.Name;
                 existingUser.Email = data.Email;
                 existingUser.Active = data.Active;
+                existingUser.MobileNumber = data.MobileNumber;
                 existingUser.RoleId = data.RoleId;
                 await _db.SaveChangesAsync();
 
