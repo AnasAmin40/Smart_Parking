@@ -18,6 +18,7 @@ import BillingHistory from "./Components/Admin/BillHistory";
 import UserManager from "./Components/Admin/UserMange";
 import UserBookingHistory from "./Components/User/UserBookingHistory";
 import SearchParking from "./Components/SearchParking";
+import ProtectedRoute from "./Components/ProtectedRoute ";
 
 function App() {
   const router = createBrowserRouter([
@@ -39,7 +40,11 @@ function App() {
     },
     {
       path: "/adminhome",
-      element: <AdminHome />,
+      element: (
+        <ProtectedRoute allowedRoles={["Admin"]}>
+          <AdminHome />
+        </ProtectedRoute>
+      ),
       children: [
         { index: true, element: <AdminDashboard /> },
         { path: "admindasboard", element: <AdminDashboard /> },
@@ -51,7 +56,11 @@ function App() {
     },
     {
       path: "/userhome",
-      element: <UserHome />,
+      element: (
+        <ProtectedRoute allowedRoles={["Admin", "User"]}>
+          <UserHome />
+        </ProtectedRoute>
+      ),
       children: [
         { index: true, element: <UserDashboard /> },
         { path: "userdashboard", element: <UserDashboard /> },

@@ -1,7 +1,10 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+
 const Sidebar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const handleLogout = () => {
     localStorage.removeItem("user");
     navigate("/login");
@@ -21,7 +24,9 @@ const Sidebar = () => {
                 <NavLink
                   to="/adminhome/admindasboard"
                   end
-                  className={({ isActive }) => navClass(isActive)}
+                  className={({ isActive }) =>
+                    navClass(isActive || location.pathname === "/adminhome")
+                  }
                 >
                   <i className="bi bi-speedometer2"></i>
                   <span>Admin Dashboard</span>

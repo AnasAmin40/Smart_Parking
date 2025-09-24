@@ -1,8 +1,10 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { useLocation } from "react-router-dom";
 
 const USideBar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const handleLogout = () => {
     localStorage.removeItem("user");
     navigate("/login");
@@ -22,7 +24,9 @@ const USideBar = () => {
                 <NavLink
                   to="/userhome/userdashboard"
                   end
-                  className={({ isActive }) => navClass(isActive)}
+                  className={({ isActive, Location }) =>
+                    navClass(isActive || location.pathname === "/userhome")
+                  }
                 >
                   <i className="bi bi-speedometer2"></i>
                   {/* <i className="bi bi-geo-alt"></i> */}

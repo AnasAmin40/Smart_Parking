@@ -1,34 +1,40 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import axios from "axios";
 
 const UserManager = () => {
   const [Data, SetData] = useState([]);
+  const [Roles, SetRoles] = useState([]); // ✅ Roles list
   const [filterText, setFilterText] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+  const fetchData = useCallback(async () => {
+    try {
+      const response = await axios.get(`http://localhost:5266/api/Users`);
+      SetData(response.data.value);
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchRoles = async () => {
       try {
-        const response = await axios.get(`http://localhost:5266/api/Users`);
+        const response = await axios.get(`http://localhost:5266/api/Role`);
+        SetRoles(response.data.value);
         console.log(response.data.value);
-        SetData(response.data.value);
       } catch (error) {
         console.log(error);
       }
     };
+
     fetchData();
+    fetchRoles();
   }, []);
 
   const columns = [
-    {
-      //   id: "id",
-      name: "ID",
-      selector: (row) => row.id,
-      sortable: true,
-      width: "80px",
-    },
+    { name: "ID", selector: (row) => row.id, sortable: true, width: "80px" },
     { name: "NAME", selector: (row) => row.name, sortable: true },
     { name: "EMAIL", selector: (row) => row.email },
     { name: "MOBILE", selector: (row) => row.mobileNumber },
@@ -56,7 +62,6 @@ const UserManager = () => {
   );
 
   const handleEdit = (user) => {
-    console.log("Edit clicked for user", user);
     setSelectedUser(user);
     setIsEditModalOpen(true);
   };
@@ -75,8 +80,8 @@ const UserManager = () => {
       );
 
       if (response.ok) {
-        alert("User updated successfully!");
-        // Update local data state
+        // alert("User updated successfully!");
+        fetchData();
         SetData((prevData) =>
           prevData.map((u) => (u.id === user.id ? user : u))
         );
@@ -92,47 +97,104 @@ const UserManager = () => {
   return (
     <>
       <div className="content-area" id="contentArea">
+        {/* Modal */}
         {isEditModalOpen && selectedUser && (
-          <div className="modal">
-            <h2>Edit User</h2>
-            <form>
-              <label>Name</label>
-              <input
-                type="text"
-                value={selectedUser.name}
-                onChange={(e) =>
-                  setSelectedUser({ ...selectedUser, name: e.target.value })
-                }
-              />
+          <div
+            className="modal fade show"
+            style={{
+              display: "block",
+              backgroundColor: "rgba(0,0,0,0.5)",
+            }}
+          >
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Edit User</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setIsEditModalOpen(false)}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <form>
+                    <label>Name</label>
+                    <input
+                      type="text"
+                      className="form-control mb-2"
+                      value={selectedUser.name}
+                      onChange={(e) =>
+                        setSelectedUser({
+                          ...selectedUser,
+                          name: e.target.value,
+                        })
+                      }
+                    />
 
-              <label>Email</label>
-              <input
-                type="email"
-                value={selectedUser.email}
-                onChange={(e) =>
-                  setSelectedUser({ ...selectedUser, email: e.target.value })
-                }
-              />
+                    <label>Email</label>
+                    <input
+                      type="email"
+                      className="form-control mb-2"
+                      value={selectedUser.email}
+                      onChange={(e) =>
+                        setSelectedUser({
+                          ...selectedUser,
+                          email: e.target.value,
+                        })
+                      }
+                    />
 
-              <label>Mobile</label>
-              <input
-                type="text"
-                value={selectedUser.mobileNumber}
-                onChange={(e) =>
-                  setSelectedUser({
-                    ...selectedUser,
-                    mobileNumber: e.target.value,
-                  })
-                }
-              />
+                    <label>Mobile</label>
+                    <input
+                      type="text"
+                      className="form-control mb-2"
+                      value={selectedUser.mobileNumber}
+                      onChange={(e) =>
+                        setSelectedUser({
+                          ...selectedUser,
+                          mobileNumber: e.target.value,
+                        })
+                      }
+                    />
 
-              <button type="button" onClick={() => saveUser(selectedUser)}>
-                Save
-              </button>
-              <button type="button" onClick={() => setIsEditModalOpen(false)}>
-                Cancel
-              </button>
-            </form>
+                    <label>Role</label>
+                    <select
+                      className="form-control mb-2"
+                      value={selectedUser.roleId || ""}
+                      onChange={(e) =>
+                        setSelectedUser({
+                          ...selectedUser,
+                          roleId: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="">-- Select Role --</option>
+                      {Roles.map((r) => (
+                        <option key={r.roleId} value={r.roleId}>
+                          {r.roles}
+                        </option>
+                      ))}
+                    </select>
+                  </form>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setIsEditModalOpen(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => saveUser(selectedUser)}
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
