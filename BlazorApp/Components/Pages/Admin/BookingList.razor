@@ -104,22 +104,5 @@
         }
     }
 
-    // protected override async Task OnAfterRenderAsync(bool firstRender)
-    // {
-    //     if (firstRender)
-    //     {
-    //         string id = await JS.InvokeAsync<string>("getSessionValue", "userId");
-    //         var data = await httpClient.GetFromJsonAsync<ApiResponse<List<Booking>>>("http://localhost:5266/api/Booking/AllBooking");
-
-    //         if (data != null)
-    //         {
-    //             BookingHistoryList = data.Value;
-    //             DataLoad = true;
-    //             StateHasChanged();
-    //         }
-    //         StateHasChanged();
-    //         await JS.InvokeVoidAsync("console.log", BookingHistoryList);
-    //     }
-
-    // }
+    
 }

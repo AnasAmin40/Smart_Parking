@@ -11,6 +11,7 @@ builder.Services.AddServerSideBlazor().AddCircuitOptions(options =>
 {
     options.DetailedErrors = true;
 });
+builder.Services.AddScoped<Radzen.DialogService>();
 
 var app = builder.Build();
 

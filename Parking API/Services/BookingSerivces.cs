@@ -35,7 +35,7 @@ namespace Parking_API.Services
         }
 
         public async Task<IActionResult> CreateBooking([FromBody] BookingRequest bookingData)
-        {
+            {
             if (bookingData == null || string.IsNullOrEmpty(bookingData.SlotType))
                 return new BadRequestResult();
 
@@ -74,8 +74,8 @@ namespace Parking_API.Services
             if (!endTime.HasValue && bookingData.DurationHours.HasValue && bookingData.DurationHours != 0)
                 endTime = startTime.AddHours(bookingData.DurationHours.Value);
 
-            if (endTime.HasValue && endTime < startTime)
-                return new BadRequestObjectResult("End time cannot be earlier than start time.");
+            //if (endTime.HasValue && endTime < startTime)
+            //    return new BadRequestObjectResult("End time cannot be earlier than start time.");
 
             var slotData = await _db.ParkingSlotTable.FirstOrDefaultAsync(s => s.SlotId == bookingData.SlotId);
             decimal? totalAmount = null;

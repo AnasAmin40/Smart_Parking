@@ -55,9 +55,14 @@ namespace Parking_API.Services
         }
 
 
-        public Task<IActionResult?> GetSlotById(int id)
+        public async Task<IActionResult?> GetSlotById(int id)
         {
-            throw new NotImplementedException();
+            var slot = await _db.ParkingSlotTable.FirstOrDefaultAsync(x => x.SlotId == id);
+            if (slot == null)
+            {
+                return new NotFoundResult();
+            }   
+            return new OkObjectResult(slot);
         }
 
         public Task<IActionResult> UpdateSlot(int id, ParkingSlot slot)
