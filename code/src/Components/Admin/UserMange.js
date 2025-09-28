@@ -62,43 +62,79 @@ const UserManager = () => {
   );
 
   const handleEdit = (user) => {
-    setSelectedUser(user);
+    setSelectedUser({
+      ...user,
+      password: "",
+      confirmPassword: "",
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleAdd = () => {
+    setSelectedUser({
+      id: 0,
+      name: "",
+      email: "",
+      mobileNumber: "",
+      roleId: 0,
+    });
     setIsEditModalOpen(true);
   };
 
   const saveUser = async (user) => {
-    try {
-      const response = await fetch(
-        `http://localhost:5266/api/Users/UpdateUser/${user.id}`,
-        {
-          method: "PUT",
+    let response;
+    if (user.id) {
+      try {
+        response = await fetch(
+          `http://localhost:5266/api/Users/UpdateUser/${user.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(user),
+          }
+        );
+
+        if (response.ok) {
+          fetchData();
+          SetData((prevData) =>
+            prevData.map((u) => (u.id === user.id ? user : u))
+          );
+          setIsEditModalOpen(false);
+        } else {
+          alert("Failed to update user.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    } else {
+      if (user.password !== user.confirmPassword) {
+        alert("Password must be same");
+      }
+      try {
+        console.log("add user, ", user);
+        response = await fetch(`http://localhost:5266/api/Users/AddUser`, {
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(user),
+        });
+        if (response.ok) {
+          fetchData();
+          setIsEditModalOpen(false);
+        } else {
+          alert("Failed to save user.");
         }
-      );
-
-      if (response.ok) {
-        // alert("User updated successfully!");
-        fetchData();
-        SetData((prevData) =>
-          prevData.map((u) => (u.id === user.id ? user : u))
-        );
-        setIsEditModalOpen(false);
-      } else {
-        alert("Failed to update user.");
-      }
-    } catch (error) {
-      console.error("Error:", error);
+      } catch (error) {}
     }
   };
 
   return (
     <>
       <div className="content-area" id="contentArea">
-        {/* Modal */}
-        {isEditModalOpen && selectedUser && (
+        {isEditModalOpen && (
           <div
             className="modal fade show"
             style={{
@@ -156,6 +192,35 @@ const UserManager = () => {
                         })
                       }
                     />
+                    {selectedUser.id === 0 && (
+                      <>
+                        <label>Password</label>
+                        <input
+                          type="password"
+                          className="form-control mb-2"
+                          value={selectedUser.password}
+                          onChange={(e) =>
+                            setSelectedUser({
+                              ...selectedUser,
+                              password: e.target.value,
+                            })
+                          }
+                        />
+
+                        <label>Confirm Password</label>
+                        <input
+                          type="password"
+                          className="form-control mb-2"
+                          value={selectedUser.confirmPassword}
+                          onChange={(e) =>
+                            setSelectedUser({
+                              ...selectedUser,
+                              confirmPassword: e.target.value,
+                            })
+                          }
+                        />
+                      </>
+                    )}
 
                     <label>Role</label>
                     <select
@@ -164,7 +229,7 @@ const UserManager = () => {
                       onChange={(e) =>
                         setSelectedUser({
                           ...selectedUser,
-                          roleId: e.target.value,
+                          roleId: parseInt(e.target.value),
                         })
                       }
                     >
@@ -206,6 +271,12 @@ const UserManager = () => {
           onChange={(e) => setFilterText(e.target.value)}
           style={{ marginBottom: "10px", padding: "5px", width: "250px" }}
         />
+        <button
+          className=" d-flex justify-content-end btn btn btn-success "
+          onClick={() => handleAdd()}
+        >
+          + Add New User
+        </button>
         <DataTable
           columns={columns}
           data={filteredData}
