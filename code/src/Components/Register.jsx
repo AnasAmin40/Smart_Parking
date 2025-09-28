@@ -2,8 +2,9 @@ import Header from "./Header";
 import "../index.css";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 const Register = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -48,7 +49,7 @@ const Register = () => {
         throw new Error("Network response was not ok");
       }
       const result = await response.json();
-      console.log("Success:", result);
+      navigate("/login");
     } catch (error) {
       console.log(error);
     }
@@ -57,7 +58,7 @@ const Register = () => {
   return (
     <>
       <Header />
-      <main class="auth-container">
+      <main className="auth-container">
         <div className="auth-form fade-in" id="registerForm">
           <h3>
             <i className="bi bi-person-plus"></i>Create Your Account

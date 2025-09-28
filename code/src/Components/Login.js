@@ -63,7 +63,7 @@ const Login = () => {
   return (
     <>
       <Header />
-      <main class="auth-container">
+      <main className="auth-container">
         <div className="auth-form fade-in" id="loginForm">
           <h3>
             <i className="bi bi-key"></i> Login Your Account

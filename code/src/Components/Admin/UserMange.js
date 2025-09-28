@@ -4,7 +4,7 @@ import axios from "axios";
 
 const UserManager = () => {
   const [Data, SetData] = useState([]);
-  const [Roles, SetRoles] = useState([]); // ✅ Roles list
+  const [Roles, SetRoles] = useState([]);
   const [filterText, setFilterText] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
